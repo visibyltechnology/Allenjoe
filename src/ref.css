@@ -266,15 +266,15 @@
 }
 
 .home-products-scroll-track .home-product-wrapper {
-    min-width: 240px;
-    max-width: 280px;
+    min-width: 190px;
+    max-width: 210px;
     flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
     .home-products-scroll-track .home-product-wrapper {
-        min-width: 65vw;
-        max-width: 65vw;
+        min-width: 55vw;
+        max-width: 55vw;
     }
 }
 
@@ -290,4 +290,32 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+}
+
+/* Compact card overrides for homepage scroll tracks */
+.home-dual-grid .p-card .p-img {
+    aspect-ratio: 3/2;
+}
+.home-dual-grid .p-card .p-body {
+    padding: 0.6rem 0.75rem;
+    gap: 3px;
+}
+.home-dual-grid .p-card .p-name {
+    font-size: 0.75rem;
+}
+.home-dual-grid .p-card .p-price {
+    font-size: 0.82rem;
+}
+.home-dual-grid .p-card .p-installment {
+    font-size: 0.6rem;
+}
+.home-dual-grid .p-card .p-cart-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    font-size: 0.7rem;
+}
+.home-dual-grid .p-card .p-foot {
+    padding-top: 0.5rem;
+    margin-top: 0.25rem;
 }
