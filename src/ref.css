@@ -265,16 +265,16 @@
     display: none;
 }
 
-.home-products-scroll-track .ref-product-card {
-    min-width: 320px;
-    max-width: 360px;
+.home-products-scroll-track .home-product-wrapper {
+    min-width: 240px;
+    max-width: 280px;
     flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-    .home-products-scroll-track .ref-product-card {
-        min-width: 82vw;
-        max-width: 82vw;
+    .home-products-scroll-track .home-product-wrapper {
+        min-width: 65vw;
+        max-width: 65vw;
     }
 }
 

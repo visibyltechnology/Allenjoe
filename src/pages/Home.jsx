@@ -377,7 +377,7 @@ export default function Home() {
                                 [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
                             ) : (
                                 bestSelling.map(product => (
-                                    <div key={product.id} className="reveal-up active" style={{ minWidth: '320px', flex: '0 0 auto' }}>
+                                    <div key={product.id} className="home-product-wrapper reveal-up active">
                                         <ProductCard 
                                             product={product} 
                                             onClick={() => navigate(`/products/${product.id}`)}
