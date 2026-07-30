@@ -83,35 +83,7 @@ export default function Home() {
 
     // Auto-scroll products track
     useEffect(() => {
-        const track = productScrollRef.current;
-        if (!track) return;
-        let scrollAmount = 0;
-        const step = 0.6; // px per frame — slow drift
-        let paused = false;
-        const pause = () => { paused = true; };
-        const resume = () => { paused = false; };
-        track.addEventListener('mouseenter', pause);
-        track.addEventListener('mouseleave', resume);
-        track.addEventListener('touchstart', pause, { passive: true });
-        track.addEventListener('touchend', resume);
-        const id = setInterval(() => {
-            if (paused || !track) return;
-            scrollAmount += step;
-            // Reset when we've scrolled past all cards (loop)
-            if (scrollAmount >= track.scrollWidth - track.clientWidth) {
-                scrollAmount = 0;
-            }
-            track.scrollLeft = scrollAmount;
-        }, 16); // ~60fps
-        return () => {
-            clearInterval(id);
-            if (track) {
-                track.removeEventListener('mouseenter', pause);
-                track.removeEventListener('mouseleave', resume);
-                track.removeEventListener('touchstart', pause);
-                track.removeEventListener('touchend', resume);
-            }
-        };
+        // Slide show stopped as requested
     }, []);
 
     // Auto-rotate Hero Carousel
@@ -243,25 +215,25 @@ export default function Home() {
                 <section className="stats-banner relative z-20" style={{ marginTop: '-40px' }}>
                     <div className="container">
                         <div className="stats-grid glass-panel grid grid-cols-2 md:grid-cols-4 gap-px bg-[#1a1a1a]/50 p-px rounded-3xl overflow-hidden shadow-2xl">
-                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]">
-                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-server"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>15,400+</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Systems Deployed</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c] cursor-pointer hover:bg-[#111] transition-all" onClick={() => navigate('/products?cat=Inverters')}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-plug"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 900, marginBottom: '0.25rem' }}>INVERTERS</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Power Systems</p>
                             </div>
-                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.1s' }}>
-                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-bolt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>99.9%</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Uptime Reliability</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c] cursor-pointer hover:bg-[#111] transition-all" style={{ transitionDelay: '0.1s' }} onClick={() => navigate('/products?cat=Solar Panels')}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-solar-panel"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 900, marginBottom: '0.25rem' }}>SOLAR PANELS</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Energy Capture</p>
                             </div>
-                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.2s' }}>
-                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-eye"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>24/7</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>AI Surveillance</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c] cursor-pointer hover:bg-[#111] transition-all" style={{ transitionDelay: '0.2s' }} onClick={() => navigate('/products?cat=Batteries')}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-car-battery"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 900, marginBottom: '0.25rem' }}>BATTERIES</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Energy Storage</p>
                             </div>
-                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.3s' }}>
-                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-shield-alt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>10 Yrs</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Hardware Warranty</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c] cursor-pointer hover:bg-[#111] transition-all" style={{ transitionDelay: '0.3s' }} onClick={() => navigate('/products?cat=CCTV')}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-video"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 900, marginBottom: '0.25rem' }}>CCTV</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Smart Security</p>
                             </div>
                         </div>
                     </div>
