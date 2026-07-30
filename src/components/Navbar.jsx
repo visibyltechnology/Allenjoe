@@ -82,9 +82,16 @@ export default function Navbar() {
                 <div className="container nav-inner">
                     {/* Brand */}
                     <Link to="/" className="brand" style={{ flexDirection: 'column', alignItems: 'flex-start', textDecoration: 'none', gap: 0 }} aria-label="Allenjoe Home">
-                        <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
-                            <img src="/logo.png?v=5" alt="Allenjoe Logo" style={{ height: '100%', objectFit: 'contain' }} />
+                        <div className="logo-title" style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#f58220', letterSpacing: '2px', lineHeight: 1 }}>
+                            ALLEN<span>JOE</span>
+                            <style>{`
+                                .logo-title span { position: relative; display: inline-block; }
+                                .logo-title span::after { content: ''; position: absolute; width: 110%; height: 2px; background: #f58220; bottom: 4px; left: -5%; transform: rotate(-15deg); }
+                            `}</style>
                         </div>
+                        <span className="logo-sub" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.65rem', color: '#fff', letterSpacing: '4px', marginTop: '5px', textTransform: 'uppercase' }}>
+                            Automation
+                        </span>
                     </Link>
 
                     {/* Menu */}
