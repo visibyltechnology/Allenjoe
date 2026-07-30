@@ -147,8 +147,11 @@ body {
     background: rgba(245,130,32,0.08);
     border-color: rgba(245,130,32,0.2);
 }
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .nav-menu { display: none; }
+}
+@media (max-width: 639px) {
+    .navbar { top: 0; }
 }
 
 /* Right actions row */
@@ -1542,6 +1545,9 @@ body {
             .nav-links {
                 display: none;
             }
+            .mobile-menu-btn {
+                display: flex;
+            }
 
             .hero h1 {
                 font-size: 3rem;
@@ -1551,12 +1557,37 @@ body {
                 grid-template-columns: 1fr 1fr;
             }
 
-            .testimonial-grid {
-                grid-template-columns: 1fr;
+            .testimonial-grid, .gallery-grid {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: thin;
+                scrollbar-color: #f58220 #111;
+                padding-bottom: 1.5rem;
+                gap: 1.5rem;
             }
 
-            .gallery-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .testimonial-grid::-webkit-scrollbar,
+            .gallery-grid::-webkit-scrollbar {
+                height: 8px;
+            }
+            .testimonial-grid::-webkit-scrollbar-track,
+            .gallery-grid::-webkit-scrollbar-track {
+                background: #111;
+                border-radius: 4px;
+            }
+            .testimonial-grid::-webkit-scrollbar-thumb,
+            .gallery-grid::-webkit-scrollbar-thumb {
+                background: #f58220;
+                border-radius: 4px;
+            }
+
+            .testimo-card, .gallery-item {
+                flex: 0 0 85%;
+                scroll-snap-align: start;
+                max-width: 380px;
+                min-width: 280px;
             }
         }
 
@@ -1580,6 +1611,6 @@ body {
             }
 
             .gallery-grid {
-                grid-template-columns: 1fr;
+                /* Inherits horizontal scroll from 900px */
             }
         }
