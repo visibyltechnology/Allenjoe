@@ -65,7 +65,7 @@ export default function Navbar() {
     return (
         <>
             {/* TOP ANNOUNCEMENT BANNER */}
-            <div className="ticker-bar hidden sm:flex" role="marquee" aria-label="Promotions">
+            <div className="ticker-bar hidden md:flex" role="marquee" aria-label="Promotions">
                 <div className="ticker-track">
                     <span className="ticker-item">{tickerText}</span>
                     <span className="ticker-item">{tickerText}</span>

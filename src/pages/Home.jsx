@@ -5,6 +5,8 @@ import { db } from '../firebase';
 import Footer from '../components/Footer';
 import { ProductCard, SkeletonCard } from '../components/ProductCard';
 import useAuthStore from '../store/useAuthStore';
+import useCartStore from '../store/useCartStore';
+import toast from 'react-hot-toast';
 import './../home.css';
 import './../ref.css';
 
@@ -71,6 +73,7 @@ import { DEMO_PRODUCTS } from '../utils/demoProducts';
 export default function Home() {
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const { addToCart } = useCartStore();
     
     // Carousel State
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -398,151 +401,25 @@ export default function Home() {
 
                         {/* Horizontal scroll wrapper */}
                         <div className="home-products-scroll-track" ref={productScrollRef}>
-                            {/* Inverter Card */}
-                            <div className="ref-product-card reveal-up active">
-                                <div className="ref-product-img-wrapper">
-                                    <div style={{ position: 'absolute', top: 10, left: 10, background: '#f58220', color: '#000', padding: '2px 8px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 800 }}>BEST SELLER</div>
-                                    <img src="/images/prod_inverter_1785371316978.png" alt="Pro Hybrid Inverter X1" className="ref-product-img" />
-                                </div>
-                                <div className="ref-product-content">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                                        <span style={{ fontSize: '0.75rem', color: '#f58220', fontWeight: 700, textTransform: 'uppercase' }}>Inverter</span>
-                                        <span style={{ fontSize: '0.75rem', color: '#f5a623' }}>★★★★★ <span style={{ color: '#777' }}>(124)</span></span>
+                            {featLoading ? (
+                                [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+                            ) : (
+                                bestSelling.map(product => (
+                                    <div key={product.id} className="reveal-up active" style={{ minWidth: '320px', flex: '0 0 auto' }}>
+                                        <ProductCard 
+                                            product={product} 
+                                            onClick={() => navigate(`/products/${product.id}`)}
+                                            onAddToCart={(prod) => {
+                                                addToCart({ ...prod, quantity: 1 });
+                                                toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
+                                                    icon: '🛒',
+                                                    style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
+                                                });
+                                            }}
+                                        />
                                     </div>
-                                    <h3 className="ref-product-title">Pro Hybrid Inverter X1</h3>
-                                    <p className="ref-product-desc">Seamless grid-tie and off-grid capabilities with intelligent battery management.</p>
-                                    <div className="ref-product-specs">
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-bolt"></i>
-                                            <span className="ref-spec-value">10kW</span>
-                                            <span className="ref-spec-label">Output</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-plug"></i>
-                                            <span className="ref-spec-value">3-Phase</span>
-                                            <span className="ref-spec-label">Phase</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-battery-full"></i>
-                                            <span className="ref-spec-value">48V</span>
-                                            <span className="ref-spec-label">Battery</span>
-                                        </div>
-                                    </div>
-                                    <div className="ref-product-actions">
-                                        <button className="ref-btn-outline" onClick={() => navigate('/products?cat=Inverters')}>Tech Specs</button>
-                                        <button className="ref-btn-solid" onClick={() => navigate('/products?cat=Inverters')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Solar Panel Card */}
-                            <div className="ref-product-card reveal-up active" style={{ transitionDelay: '0.1s' }}>
-                                <div className="ref-product-img-wrapper">
-                                    <img src="/images/prod_solar_panel_1785371325929.png" alt="Monocrystalline Array" className="ref-product-img" />
-                                </div>
-                                <div className="ref-product-content">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                                        <span style={{ fontSize: '0.75rem', color: '#f58220', fontWeight: 700, textTransform: 'uppercase' }}>Solar Panel</span>
-                                        <span style={{ fontSize: '0.75rem', color: '#f5a623' }}>★★★★★ <span style={{ color: '#777' }}>(89)</span></span>
-                                    </div>
-                                    <h3 className="ref-product-title">Monocrystalline Array</h3>
-                                    <p className="ref-product-desc">Tier 1 solar panels engineered for extreme weather and low-light yields.</p>
-                                    <div className="ref-product-specs">
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-sun"></i>
-                                            <span className="ref-spec-value">550W</span>
-                                            <span className="ref-spec-label">Power</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-percentage"></i>
-                                            <span className="ref-spec-value">21.5%</span>
-                                            <span className="ref-spec-label">Eff.</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-shield-alt"></i>
-                                            <span className="ref-spec-value">25 Yr</span>
-                                            <span className="ref-spec-label">Warr.</span>
-                                        </div>
-                                    </div>
-                                    <div className="ref-product-actions">
-                                        <button className="ref-btn-outline" onClick={() => navigate('/products?cat=Solar Panels')}>Tech Specs</button>
-                                        <button className="ref-btn-solid" onClick={() => navigate('/products?cat=Solar Panels')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* CCTV Card */}
-                            <div className="ref-product-card reveal-up active" style={{ transitionDelay: '0.2s' }}>
-                                <div className="ref-product-img-wrapper">
-                                    <div style={{ position: 'absolute', top: 10, left: 10, background: '#111', border: '1px solid #f58220', color: '#f58220', padding: '2px 8px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 800 }}>NEW ARRIVAL</div>
-                                    <img src="/images/prod_cctv_1785371335915.png" alt="4K AI PTZ Security Cam" className="ref-product-img" />
-                                </div>
-                                <div className="ref-product-content">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                                        <span style={{ fontSize: '0.75rem', color: '#f58220', fontWeight: 700, textTransform: 'uppercase' }}>CCTV Camera</span>
-                                        <span style={{ fontSize: '0.75rem', color: '#f5a623' }}>★★★★★ <span style={{ color: '#777' }}>(42)</span></span>
-                                    </div>
-                                    <h3 className="ref-product-title">4K AI PTZ Security Cam</h3>
-                                    <p className="ref-product-desc">PoE enabled smart dome camera with 360&deg; rotation and auto-human tracking.</p>
-                                    <div className="ref-product-specs">
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-video"></i>
-                                            <span className="ref-spec-value">4K UHD</span>
-                                            <span className="ref-spec-label">Res</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-search-plus"></i>
-                                            <span className="ref-spec-value">Optical 4x</span>
-                                            <span className="ref-spec-label">Lens</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-moon"></i>
-                                            <span className="ref-spec-value">Color Night</span>
-                                            <span className="ref-spec-label">Vision</span>
-                                        </div>
-                                    </div>
-                                    <div className="ref-product-actions">
-                                        <button className="ref-btn-outline" onClick={() => navigate('/products?cat=CCTV')}>Tech Specs</button>
-                                        <button className="ref-btn-solid" onClick={() => navigate('/products?cat=CCTV')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Batteries Card */}
-                            <div className="ref-product-card reveal-up active" style={{ transitionDelay: '0.3s' }}>
-                                <div className="ref-product-img-wrapper" style={{ background: '#0a0a0c' }}>
-                                    <i className="fas fa-car-battery" style={{ fontSize: '5rem', color: '#f58220', opacity: 0.7 }}></i>
-                                </div>
-                                <div className="ref-product-content">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                                        <span style={{ fontSize: '0.75rem', color: '#f58220', fontWeight: 700, textTransform: 'uppercase' }}>Battery</span>
-                                        <span style={{ fontSize: '0.75rem', color: '#f5a623' }}>★★★★★ <span style={{ color: '#777' }}>(67)</span></span>
-                                    </div>
-                                    <h3 className="ref-product-title">Lithium Battery Bank</h3>
-                                    <p className="ref-product-desc">Scalable deep-cycle lithium storage for complete off-grid independence.</p>
-                                    <div className="ref-product-specs">
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-bolt"></i>
-                                            <span className="ref-spec-value">5kWh</span>
-                                            <span className="ref-spec-label">Cap.</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-recycle"></i>
-                                            <span className="ref-spec-value">6000+</span>
-                                            <span className="ref-spec-label">Cycles</span>
-                                        </div>
-                                        <div className="ref-spec-badge">
-                                            <i className="fas fa-plug"></i>
-                                            <span className="ref-spec-value">48V</span>
-                                            <span className="ref-spec-label">Volt</span>
-                                        </div>
-                                    </div>
-                                    <div className="ref-product-actions">
-                                        <button className="ref-btn-outline" onClick={() => navigate('/products?cat=Batteries')}>Tech Specs</button>
-                                        <button className="ref-btn-solid" onClick={() => navigate('/products?cat=Batteries')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </section>

@@ -151,7 +151,7 @@ body {
 @media (max-width: 768px) {
     .nav-menu { display: none; }
 }
-@media (max-width: 639px) {
+@media (max-width: 767px) {
     .navbar { top: 0; }
 }
 

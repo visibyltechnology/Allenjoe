@@ -1,5 +1,34 @@
-generate title logo and description should be circular
+replace this 
+15,400+
+Systems Deployed
 
-home product button not responding, some have wrong function
+99.9%
+Uptime Reliability
 
-full product information listing page not responding
+24/7
+AI Surveillance
+
+10 Yrs
+Hardware Warranty
+
+with different categories like inverter, solar etc
+
+stop slide show for product listing on homepage
+
+
+this <div class="container nav-inner"><a class="brand" aria-label="Allenjoe Home" href="/" data-discover="true" style="flex-direction: column; align-items: flex-start; text-decoration: none; gap: 0px;"><div class="logo-title" style="font-family: &quot;Space Grotesk&quot;, sans-serif; font-size: 2rem; font-weight: 900; color: rgb(245, 130, 32); letter-spacing: 2px; line-height: 1;">ALLEN<span>JOE</span><style>
+                                .logo-title span { position: relative; display: inline-block; }
+                                .logo-title span::after { content: ''; position: absolute; width: 110%; height: 2px; background: #f58220; bottom: 4px; left: -5%; transform: rotate(-15deg); }
+                            </style></div><span class="logo-sub" style="font-family: Montserrat, sans-serif; font-size: 0.65rem; color: rgb(255, 255, 255); letter-spacing: 4px; margin-top: 5px; text-transform: uppercase;">Automation</span></a><ul class="nav-menu" role="list"><li><a class="active" href="/" data-discover="true">Home</a></li><li><a class="" href="/products?cat=Inverters" data-discover="true">Inverters</a></li><li><a class="" href="/products?cat=Solar Panels" data-discover="true">Solar Panels</a></li><li><a class="" href="/products?cat=Batteries" data-discover="true">Batteries</a></li><li><a class="" href="/products?cat=CCTV" data-discover="true">CCTV</a></li><li><a class="" href="/products" data-discover="true">Shop All</a></li></ul><div class="nav-right"><form class="search-pill"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="Search products…" aria-label="Search products" type="search" value=""></form><a class="nav-icon-btn hidden sm:flex" aria-label="Login" href="/login" data-discover="true"><i class="fa-solid fa-user"></i></a><div class="hidden sm:block"><div class="relative"><button class="relative p-2 transition-colors text-gray-600 hover:text-gray-900" title="Notifications"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></button><style>
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+      </style></div></div><a class="nav-icon-btn" aria-label="Cart" href="/cart" data-discover="true"><i class="fa-solid fa-cart-shopping"></i></a><a class="nav-shop-btn" href="/products" data-discover="true"><i class="fa-solid fa-bag-shopping"></i> Shop Now</a><button class="nav-icon-btn nav-mobile-toggle" aria-label="Toggle mobile menu"><i class="fa-solid fa-bars"></i></button></div></div>
+
+      is being obstructed by <div class="ticker-bar hidden sm:flex" role="marquee" aria-label="Promotions"><div class="ticker-track"><span class="ticker-item">Premium Solar Inverters · CCTV Cameras · Lithium Batteries · Smart Automation — Nationwide Delivery</span><span class="ticker-item">Premium Solar Inverters · CCTV Cameras · Lithium Batteries · Smart Automation — Nationwide Delivery</span><span class="ticker-item">Premium Solar Inverters · CCTV Cameras · Lithium Batteries · Smart Automation — Nationwide Delivery</span></div></div>
+
+
+
+
+      homepage featured product should refrence the design from C:\Users\Hassan\Desktop\The-electric-plug
