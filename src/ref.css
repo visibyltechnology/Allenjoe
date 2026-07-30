@@ -284,3 +284,16 @@
         grid-template-columns: 1fr !important;
     }
 }
+
+/* Dual product grid — two scroll tracks side by side */
+.home-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .home-dual-grid {
+        grid-template-columns: 1fr;
+    }
+}
