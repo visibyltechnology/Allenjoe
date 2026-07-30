@@ -78,6 +78,7 @@ export default function Home() {
     // Carousel State
     const [currentSlide, setCurrentSlide] = useState(0);
     const [bestSelling, setBestSelling] = useState([]);
+    const [secondGrid, setSecondGrid] = useState([]);
     const [featLoading, setFeatLoading] = useState(true);
     const productScrollRef = useRef(null);
 
@@ -102,12 +103,14 @@ export default function Home() {
                 setFeatLoading(true);
                 if (!db) {
                     setBestSelling(DEMO_PRODUCTS.slice(0, 4));
+                    setSecondGrid(DEMO_PRODUCTS.slice(4, 8));
                     return;
                 }
-                const qRecent = query(collection(db, "products"), limit(4));
+                const qRecent = query(collection(db, "products"), limit(8));
                 const snapRecent = await getDocs(qRecent);
                 let products = snapRecent.docs.map(d => ({ id: d.id, ...d.data() }));
-                setBestSelling(products);
+                setBestSelling(products.slice(0, 4));
+                setSecondGrid(products.slice(4, 8));
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -240,6 +243,44 @@ export default function Home() {
                     </div>
                 </section>
 
+                {/* ADVANCED SHOP — first grid (above Integration Hub) */}
+                <section id="products" className="products section-padding" style={{ background: '#0a0a0c' }}>
+                    <div className="container">
+                        <div className="section-header flex-between reveal-up active flex-wrap gap-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
+                            <div className="w-full sm:w-auto">
+                                <h2 className="section-title" style={{ fontSize: 'clamp(1.8rem, 6vw, 2.5rem)', fontWeight: 900 }}>ADVANCED <span className="gradient-text">HARDWARE SHOP</span></h2>
+                                <p className="section-subtitle" style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', marginTop: '0.5rem' }}>Select individual components or purchase pre-configured bundles for maximum savings.</p>
+                            </div>
+                            <Link to="/products" className="btn btn-outline whitespace-nowrap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                View All <i className="fas fa-arrow-right"></i>
+                            </Link>
+                        </div>
+
+                        {/* Horizontal scroll wrapper */}
+                        <div className="home-products-scroll-track" ref={productScrollRef}>
+                            {featLoading ? (
+                                [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+                            ) : (
+                                bestSelling.map(product => (
+                                    <div key={product.id} className="home-product-wrapper reveal-up active">
+                                        <ProductCard 
+                                            product={product} 
+                                            onClick={() => navigate(`/products/${product.id}`)}
+                                            onAddToCart={(prod) => {
+                                                addToCart({ ...prod, quantity: 1 });
+                                                toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
+                                                    icon: '🛒',
+                                                    style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </section>
+
                 {/* INTELLIGENT INTEGRATION HUB — redesigned */}
                 <section id="integration" className="integration section-padding" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #050506 0%, #0a0a10 100%)' }}>
                     <div className="container">
@@ -310,6 +351,58 @@ export default function Home() {
                     </div>
                 </section>
 
+                {/* SECOND PRODUCT GRID — below Integration Hub */}
+                <section className="products section-padding" style={{ background: '#050506' }}>
+                    <div className="container">
+                        <div className="section-header flex-between reveal-up active flex-wrap gap-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
+                            <div className="w-full sm:w-auto">
+                                <h2 className="section-title" style={{ fontSize: 'clamp(1.8rem, 6vw, 2.5rem)', fontWeight: 900 }}>MORE <span className="gradient-text">PRODUCTS</span></h2>
+                                <p className="section-subtitle" style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', marginTop: '0.5rem' }}>Explore our full range of solar, security, and power solutions.</p>
+                            </div>
+                            <Link to="/products" className="btn btn-outline whitespace-nowrap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                View All <i className="fas fa-arrow-right"></i>
+                            </Link>
+                        </div>
+                        <div className="home-products-scroll-track">
+                            {featLoading ? (
+                                [1, 2, 3, 4].map(i => <SkeletonCard key={`sk2-${i}`} />)
+                            ) : secondGrid.length > 0 ? (
+                                secondGrid.map(product => (
+                                    <div key={product.id} className="home-product-wrapper reveal-up active">
+                                        <ProductCard
+                                            product={product}
+                                            onClick={() => navigate(`/products/${product.id}`)}
+                                            onAddToCart={(prod) => {
+                                                addToCart({ ...prod, quantity: 1 });
+                                                toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
+                                                    icon: '🛒',
+                                                    style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                bestSelling.map(product => (
+                                    <div key={`g2-${product.id}`} className="home-product-wrapper reveal-up active">
+                                        <ProductCard
+                                            product={product}
+                                            onClick={() => navigate(`/products/${product.id}`)}
+                                            onAddToCart={(prod) => {
+                                                addToCart({ ...prod, quantity: 1 });
+                                                toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
+                                                    icon: '🛒',
+                                                    style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </section>
+
                 {/* AUTOMATION & SCALING — redesigned as step-flow */}
                 <section id="automation" className="automation section-padding" style={{ background: '#050506' }}>
                     <div className="container">
@@ -359,43 +452,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* ADVANCED SHOP */}
-                <section id="products" className="products section-padding" style={{ background: '#0a0a0c' }}>
-                    <div className="container">
-                        <div className="section-header flex-between reveal-up active flex-wrap gap-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
-                            <div className="w-full sm:w-auto">
-                                <h2 className="section-title" style={{ fontSize: 'clamp(1.8rem, 6vw, 2.5rem)', fontWeight: 900 }}>ADVANCED <span className="gradient-text">HARDWARE SHOP</span></h2>
-                                <p className="section-subtitle" style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', marginTop: '0.5rem' }}>Select individual components or purchase pre-configured bundles for maximum savings.</p>
-                            </div>
-                            <Link to="/products" className="btn btn-outline whitespace-nowrap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                View All <i className="fas fa-arrow-right"></i>
-                            </Link>
-                        </div>
-
-                        {/* Horizontal scroll wrapper */}
-                        <div className="home-products-scroll-track" ref={productScrollRef}>
-                            {featLoading ? (
-                                [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
-                            ) : (
-                                bestSelling.map(product => (
-                                    <div key={product.id} className="home-product-wrapper reveal-up active">
-                                        <ProductCard 
-                                            product={product} 
-                                            onClick={() => navigate(`/products/${product.id}`)}
-                                            onAddToCart={(prod) => {
-                                                addToCart({ ...prod, quantity: 1 });
-                                                toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
-                                                    icon: '🛒',
-                                                    style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </section>
 
 
                 {/* TESTIMONIALS */}
