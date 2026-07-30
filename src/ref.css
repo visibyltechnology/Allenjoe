@@ -256,34 +256,31 @@
     display: flex;
     gap: 1.5rem;
     overflow-x: auto;
-    padding-bottom: 2rem;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    scrollbar-color: #f58220 #111;
+    padding-bottom: 1rem;
+    /* Hide scrollbar so auto-scroll looks clean */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
-
 .home-products-scroll-track::-webkit-scrollbar {
-    height: 8px;
-}
-.home-products-scroll-track::-webkit-scrollbar-track {
-    background: #111;
-    border-radius: 4px;
-}
-.home-products-scroll-track::-webkit-scrollbar-thumb {
-    background: #f58220;
-    border-radius: 4px;
+    display: none;
 }
 
 .home-products-scroll-track .ref-product-card {
     min-width: 320px;
     max-width: 360px;
     flex: 0 0 auto;
-    scroll-snap-align: start;
 }
 
 @media (max-width: 768px) {
     .home-products-scroll-track .ref-product-card {
-        min-width: 280px;
-        max-width: 300px;
+        min-width: 82vw;
+        max-width: 82vw;
+    }
+}
+
+/* Automation step grid — stack on mobile */
+@media (max-width: 640px) {
+    .automation-step-grid {
+        grid-template-columns: 1fr !important;
     }
 }

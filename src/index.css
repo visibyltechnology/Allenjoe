@@ -270,6 +270,25 @@ body {
     .nav-shop-btn { display: none; }
 }
 
+/* Mobile hamburger toggle \u2014 hidden on desktop, shown on mobile */
+.nav-mobile-toggle {
+    display: none;
+}
+@media (max-width: 768px) {
+    .nav-mobile-toggle {
+        display: flex !important;
+    }
+}
+
+/* Desktop-only helper \u2014 hides on mobile */
+.desktop-only {
+    display: block;
+}
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+}
 
 /* ============================================================
    ALLENJOE — Product Card System

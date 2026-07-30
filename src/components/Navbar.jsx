@@ -150,9 +150,9 @@ export default function Navbar() {
                             <i className="fa-solid fa-bag-shopping"></i> Shop Now
                         </Link>
 
-                        {/* Mobile Menu Toggle */}
+                        {/* Mobile Menu Toggle — always visible, hidden on desktop via CSS */}
                         <button 
-                            className="nav-icon-btn md:hidden" 
+                            className="nav-icon-btn nav-mobile-toggle"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             aria-label="Toggle mobile menu"
                         >
