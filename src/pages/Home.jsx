@@ -127,7 +127,7 @@ export default function Home() {
         <div className="home-page-wrapper">
             <main>
                 {/* HERO SECTION WITH CAROUSEL */}
-                <section className="hero" style={{ overflow: 'hidden' }}>
+                <section className="hero" style={{ overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: '80px', paddingBottom: '80px' }}>
                     {HERO_SLIDES.map((slide, index) => (
                         <div 
                             key={slide.id}
@@ -135,14 +135,14 @@ export default function Home() {
                             style={{
                                 position: 'absolute', inset: 0,
                                 background: `url('${slide.bg}') center/cover no-repeat`,
-                                opacity: index === currentSlide ? 0.6 : 0,
+                                opacity: index === currentSlide ? 0.85 : 0,
                                 transform: index === currentSlide ? 'scale(1)' : 'scale(1.05)',
                                 transition: 'opacity 1s ease-in-out, transform 3s ease-out',
                                 zIndex: 0
                             }}
                         >
-                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #050505, transparent 50%, #050505)' }}></div>
-                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #050505, transparent 80%)' }}></div>
+                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #050505, transparent 70%)' }}></div>
+                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(5,5,5,0.7), transparent 100%)' }}></div>
                         </div>
                     ))}
                     <div className="hero-bg">
@@ -151,7 +151,7 @@ export default function Home() {
                         <div className="scanline"></div>
                     </div>
 
-                    <div className="container relative z-10" style={{ minHeight: '600px', display: 'flex', alignItems: 'center' }}>
+                    <div className="container relative z-10 w-full" style={{ display: 'flex', alignItems: 'center' }}>
                         {HERO_SLIDES.map((slide, index) => (
                             <div 
                                 key={slide.id}
@@ -203,28 +203,28 @@ export default function Home() {
                 </section>
 
                 {/* ADVANCED STATS BANNER */}
-                <section className="stats-banner relative z-20" style={{ marginTop: '-60px' }}>
+                <section className="stats-banner relative z-20" style={{ marginTop: '-40px' }}>
                     <div className="container">
-                        <div className="stats-grid glass-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1px', background: 'rgba(26,26,26,0.5)', padding: '1px', borderRadius: '24px', overflow: 'hidden' }}>
-                            <div className="stat-card reveal-up active" style={{ background: '#0a0a0c' }}>
-                                <div className="icon-wrapper"><i className="fas fa-server"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>15,400+</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Systems Deployed</p>
+                        <div className="stats-grid glass-panel grid grid-cols-2 md:grid-cols-4 gap-px bg-[#1a1a1a]/50 p-px rounded-3xl overflow-hidden shadow-2xl">
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]">
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-server"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>15,400+</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Systems Deployed</p>
                             </div>
-                            <div className="stat-card reveal-up active" style={{ transitionDelay: '0.1s', background: '#0a0a0c' }}>
-                                <div className="icon-wrapper"><i className="fas fa-bolt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>99.9%</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Uptime Reliability</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.1s' }}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-bolt"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>99.9%</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Uptime Reliability</p>
                             </div>
-                            <div className="stat-card reveal-up active" style={{ transitionDelay: '0.2s', background: '#0a0a0c' }}>
-                                <div className="icon-wrapper"><i className="fas fa-eye"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>24/7</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>AI Surveillance</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.2s' }}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-eye"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>24/7</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>AI Surveillance</p>
                             </div>
-                            <div className="stat-card reveal-up active" style={{ transitionDelay: '0.3s', background: '#0a0a0c' }}>
-                                <div className="icon-wrapper"><i className="fas fa-shield-alt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>10 Yrs</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Hardware Warranty</p>
+                            <div className="stat-card reveal-up active flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0c]" style={{ transitionDelay: '0.3s' }}>
+                                <div className="icon-wrapper mb-3 text-[#f58220] text-2xl"><i className="fas fa-shield-alt"></i></div>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: '0.25rem' }}>10 Yrs</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem', fontWeight: 700 }}>Hardware Warranty</p>
                             </div>
                         </div>
                     </div>

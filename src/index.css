@@ -1553,10 +1553,6 @@ body {
                 font-size: 3rem;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
             .testimonial-grid, .gallery-grid {
                 display: flex;
                 flex-wrap: nowrap;
@@ -1592,10 +1588,6 @@ body {
         }
 
         @media (max-width: 600px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
             .hero-btns {
                 flex-direction: column;
             }
