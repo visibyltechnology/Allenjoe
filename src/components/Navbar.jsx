@@ -65,7 +65,7 @@ export default function Navbar() {
     return (
         <>
             {/* TOP ANNOUNCEMENT BANNER */}
-            <div className="ticker-bar" role="marquee" aria-label="Promotions">
+            <div className="ticker-bar hidden sm:flex" role="marquee" aria-label="Promotions">
                 <div className="ticker-track">
                     <span className="ticker-item">{tickerText}</span>
                     <span className="ticker-item">{tickerText}</span>
@@ -161,88 +161,110 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* MOBILE NAVIGATION DROPDOWN */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-[#1a1a1a] px-4 pt-4 pb-8 space-y-2 overflow-y-auto max-h-[85vh] bg-[#050505]">
+                {/* MOBILE NAVIGATION DRAWER */}
+                <div 
+                    className={`fixed inset-0 z-[2000] transition-opacity duration-300 md:hidden ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                >
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setMobileMenuOpen(false)}
+                    />
+                    
+                    {/* Drawer */}
+                    <div 
+                        className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-[#0a0a0a] border-l border-[#1a1a1a] p-6 shadow-2xl overflow-y-auto transition-transform duration-300 ease-out flex flex-col ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                    >
+                        <div className="flex items-center justify-between mb-8">
+                            <span className="font-tech text-xl font-bold text-white tracking-widest">MENU</span>
+                            <button 
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#141414] text-gray-400 hover:text-white border border-[#222]"
+                            >
+                                <i className="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
                         {/* Mobile Search */}
                         <form onSubmit={handleSearch} className="relative mb-6">
                             <input
                                 type="text"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search inverters, cameras..."
-                                className="w-full bg-[#0a0a0a] text-white pl-4 pr-12 py-3.5 rounded-xl text-sm border border-[#222] focus:border-[#f58220] outline-none font-medium"
+                                placeholder="Search products..."
+                                className="w-full bg-[#141414] text-white pl-11 pr-4 py-3.5 rounded-xl text-sm border border-[#222] focus:border-[#f58220] outline-none font-medium transition-all"
                             />
-                            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#f58220] p-2">
-                                <i className="fa-solid fa-magnifying-glass"></i>
-                            </button>
+                            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                         </form>
 
-                        <div className="space-y-1">
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-2">Navigation</p>
-                            <Link to="/" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${isActive('/') ? 'bg-[#111] text-white border border-[#f58220]' : 'text-gray-300 hover:text-white hover:bg-[#111]'}`}>
-                                <i className="fas fa-home w-5 text-center" style={{color:'#f58220'}}></i> Home
+                        <div className="space-y-2 mb-6">
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-1">Navigation</p>
+                            <Link to="/" className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${isActive('/') ? 'bg-[#1a1a1a] text-[#f58220] border border-[#333]' : 'text-gray-300 hover:text-white hover:bg-[#141414]'}`}>
+                                <i className="fas fa-home w-5 text-center"></i> Home
                             </Link>
-                            <Link to="/products" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${isActive('/products') && !location.search ? 'bg-[#111] text-white border border-[#f58220]' : 'text-gray-300 hover:text-white hover:bg-[#111]'}`}>
-                                <i className="fas fa-solar-panel w-5 text-center" style={{color:'#f58220'}}></i> Shop All Systems
+                            <Link to="/products" className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${isActive('/products') && !location.search ? 'bg-[#1a1a1a] text-[#f58220] border border-[#333]' : 'text-gray-300 hover:text-white hover:bg-[#141414]'}`}>
+                                <i className="fas fa-store w-5 text-center"></i> Shop All
                             </Link>
                         </div>
 
-                        <div className="pt-4 mt-2 border-t border-[#1C1C24]">
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-2">Categories</p>
-                            <div className="grid grid-cols-2 gap-2">
+                        <div className="mb-6">
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-1">Categories</p>
+                            <div className="grid grid-cols-2 gap-3">
                                 {[
                                     { label: 'Inverters', to: '/products?cat=Inverters', icon: 'fa-bolt' },
-                                    { label: 'Solar Panels', to: '/products?cat=Solar Panels', icon: 'fa-solar-panel' },
+                                    { label: 'Panels', to: '/products?cat=Solar Panels', icon: 'fa-solar-panel' },
                                     { label: 'Batteries', to: '/products?cat=Batteries', icon: 'fa-battery-full' },
                                     { label: 'CCTV', to: '/products?cat=CCTV', icon: 'fa-video' },
                                 ].map(l => (
-                                    <Link key={l.to} to={l.to} className="flex flex-col items-center justify-center gap-2 bg-[#111116] border border-[#22222E] rounded-xl p-3 text-gray-400 hover:text-white hover:border-[#f58220] transition-all">
-                                        <i className={`fa-solid ${l.icon} text-lg text-[#f58220]`}></i>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">{l.label}</span>
+                                    <Link key={l.to} to={l.to} className="flex flex-col items-center justify-center gap-2 bg-[#141414] border border-[#222] rounded-xl p-4 text-gray-400 hover:text-white hover:border-[#f58220] transition-all">
+                                        <i className={`fa-solid ${l.icon} text-xl text-[#f58220]`}></i>
+                                        <span className="text-[11px] font-bold uppercase tracking-widest">{l.label}</span>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="pt-4 mt-4 border-t border-[#1C1C24] space-y-1">
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-2">Account</p>
+                        <div className="mt-auto pt-6 border-t border-[#1a1a1a] space-y-2">
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-3 px-1">Account</p>
                             {user ? (
                                 <>
-                                    <Link to="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white rounded-xl hover:bg-[#161618] text-sm font-bold transition-all">
+                                    <Link to="/profile" className="flex items-center gap-4 px-4 py-3.5 text-gray-300 hover:text-white rounded-xl hover:bg-[#141414] text-sm font-bold transition-all">
                                         <i className="fas fa-user w-5 text-center text-gray-500"></i> My Profile
                                     </Link>
-                                    <Link to="/cart" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white rounded-xl hover:bg-[#161618] text-sm font-bold transition-all">
-                                        <i className="fas fa-bag-shopping w-5 text-center text-gray-500"></i> Cart ({cartCount})
+                                    <Link to="/cart" className="flex items-center justify-between px-4 py-3.5 text-gray-300 hover:text-white rounded-xl hover:bg-[#141414] text-sm font-bold transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <i className="fas fa-bag-shopping w-5 text-center text-gray-500"></i> Cart
+                                        </div>
+                                        {cartCount > 0 && <span className="bg-[#f58220] text-black px-2 py-0.5 rounded-full text-[10px]">{cartCount}</span>}
                                     </Link>
-                                    <div className="px-2 py-1">
+                                    <div className="px-2 py-2">
                                         <NotificationBell userId={user.uid} isMobile={true} />
                                     </div>
                                     {isAdmin && (
-                                    <Link to="/admin" className="flex items-center gap-3 px-4 py-3 text-[#f58220] font-black rounded-xl bg-[rgba(245,130,32,0.08)] border border-[rgba(245,130,32,0.2)] text-sm transition-all mt-2">
+                                        <Link to="/admin" className="flex items-center gap-4 px-4 py-3.5 text-[#f58220] font-black rounded-xl bg-[rgba(245,130,32,0.08)] border border-[rgba(245,130,32,0.2)] text-sm transition-all mt-2">
                                             <i className="fas fa-cog w-5 text-center"></i> Admin Panel
                                         </Link>
                                     )}
                                     <button
                                         onClick={handleLogout}
-                                        className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-500 font-bold hover:text-red-400 rounded-xl hover:bg-red-950/30 text-sm transition-all mt-2"
+                                        className="flex items-center gap-4 w-full text-left px-4 py-3.5 text-red-500 font-bold hover:text-red-400 rounded-xl hover:bg-red-950/20 text-sm transition-all mt-2"
                                     >
                                         <i className="fas fa-sign-out-alt w-5 text-center"></i> Logout
                                     </button>
                                 </>
                             ) : (
-                                <div className="grid grid-cols-2 gap-2 mt-2">
-                                    <Link to="/login" className="flex items-center justify-center gap-2 py-3 font-black rounded-xl text-white text-xs uppercase tracking-wider" style={{ background: 'linear-gradient(135deg, #f58220 0%, #c46516 100%)', boxShadow: '0 4px 12px rgba(245,130,32,0.35)' }}>
+                                <div className="grid grid-cols-2 gap-3 mt-2">
+                                    <Link to="/login" className="flex items-center justify-center py-3.5 font-black rounded-xl text-black text-xs uppercase tracking-wider bg-brandOrange hover:bg-brandOrange/90 transition-colors shadow-[0_4px_12px_rgba(245,130,32,0.25)]">
                                         Sign In
                                     </Link>
-                                    <Link to="/register" className="flex items-center justify-center gap-2 py-3 font-bold rounded-xl bg-[#161618] border border-[#2A2A30] text-gray-300 text-xs uppercase tracking-wider">
+                                    <Link to="/register" className="flex items-center justify-center py-3.5 font-bold rounded-xl bg-[#141414] border border-[#2A2A30] text-gray-300 text-xs uppercase tracking-wider hover:bg-[#1a1a1a]">
                                         Register
                                     </Link>
                                 </div>
                             )}
                         </div>
                     </div>
-                )}
+                </div>
             </nav>
         </>
     );

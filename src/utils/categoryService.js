@@ -9,6 +9,10 @@ const CATEGORIES_COLLECTION = 'categories';
  * @returns {Function} Unsubscribe function
  */
 export const listenToCategories = (onUpdate) => {
+  if (!db) {
+    onUpdate(DEFAULT_CATEGORIES);
+    return () => {};
+  }
   const q = query(collection(db, CATEGORIES_COLLECTION), orderBy('order', 'asc'));
 
   const mergeCats = (dbCats) => {

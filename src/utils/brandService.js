@@ -4,6 +4,10 @@ import { db } from '../firebase';
 const BRANDS_COLLECTION = 'brands';
 
 export const listenToBrands = (onUpdate) => {
+  if (!db) {
+    onUpdate(DEFAULT_BRANDS);
+    return () => {};
+  }
   const q = query(collection(db, BRANDS_COLLECTION), orderBy('order', 'asc'));
 
   const mergeBrands = (dbBrands) => {

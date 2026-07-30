@@ -39,6 +39,17 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       setLoading(true);
       try {
+        if (!db) {
+          const demoProd = DEMO_PRODUCTS.find(p => p.id === id);
+          if (demoProd) {
+            setProduct(demoProd);
+            setSelectedImg(demoProd.img || demoProd.images?.[0] || '');
+          } else {
+            setError("Product not found");
+          }
+          setLoading(false);
+          return;
+        }
         const docRef = doc(db, "products", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -73,7 +84,7 @@ export default function ProductDetail() {
   }, [id]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !db) return;
     const q = query(collection(db, 'products', id, 'reviews'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedReviews = [];
@@ -87,9 +98,9 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#505060' }}>
-          <i className="fas fa-circle-notch fa-spin text-4xl mb-4" style={{ color: '#D42B2B' }}></i>
+          <i className="fas fa-circle-notch fa-spin text-4xl mb-4" style={{ color: '#f58220' }}></i>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'Rajdhani, sans-serif' }}>Loading Product...</h2>
         </div>
       </main>
@@ -98,10 +109,10 @@ export default function ProductDetail() {
 
   if (error || !product) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#E8E8F0', marginBottom: '1rem', fontFamily: 'Rajdhani, sans-serif' }}>{error || 'Product Not Found'}</h2>
-          <Link to="/products" style={{ color: '#D42B2B', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#FF3030'} onMouseLeave={e => e.currentTarget.style.color = '#D42B2B'}>
+          <Link to="/products" style={{ color: '#f58220', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#c46516'} onMouseLeave={e => e.currentTarget.style.color = '#f58220'}>
             <ArrowLeft size={16} /> Back to Shop
           </Link>
         </div>
@@ -144,6 +155,11 @@ export default function ProductDetail() {
     }
     setIsSubmittingReview(true);
     try {
+      if (!db) {
+        toast.error('Database is unavailable');
+        setIsSubmittingReview(false);
+        return;
+      }
       await addDoc(collection(db, 'products', id, 'reviews'), {
         userId: user.uid,
         userName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
@@ -165,7 +181,7 @@ export default function ProductDetail() {
   const averageRating = reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : 0;
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506' }}>
       <div className="px-4 sm:px-6" style={{ maxWidth: '80rem', margin: '0 auto', paddingTop: '110px', paddingBottom: '2rem', width: '100%', flex: 1 }}>
         
         {/* Breadcrumb / Back */}
@@ -175,23 +191,23 @@ export default function ProductDetail() {
           </Link>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', lg: { gap: '4rem' } }}>
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           
           {/* Image Column */}
-          <div style={{ width: '100%', flex: '1 1 400px', maxWidth: '100%' }}>
+          <div className="w-full lg:flex-1 lg:w-1/2">
             <div style={{
               position: 'sticky', top: 32,
-              background: 'linear-gradient(135deg, #1A1A1E, #161618)',
-              border: '1px solid #2A2A30', borderRadius: 24, padding: '2rem',
+              background: 'linear-gradient(135deg, #0a0a0c, #050506)',
+              border: '1px solid #1e1e20', borderRadius: 24, padding: '2rem',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               minHeight: 400, boxShadow: '0 20px 40px rgba(0,0,0,0.5)', overflow: 'hidden',
             }}>
-              <div className="bg-circuit" style={{ position: 'absolute', inset: 0, opacity: 0.2, pointerEvents: 'none' }}></div>
+              <div className="bg-circuit" style={{ position: 'absolute', inset: 0, opacity: 0.1, pointerEvents: 'none' }}></div>
               
               <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                 <img src={selectedImg || product.img || product.images?.[0]} alt={product.name} loading="lazy" decoding="async" style={{ position: 'relative', zIndex: 10, maxWidth: '100%', maxHeight: 400, objectFit: 'contain', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.4))' }} />
                 {product.featured && (
-                  <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 20, background: '#F0A500', color: '#161618', fontSize: '0.6rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 20, background: '#f58220', color: '#050506', fontSize: '0.6rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     Featured
                   </span>
                 )}
@@ -205,13 +221,13 @@ export default function ProductDetail() {
                       onClick={() => setSelectedImg(img)}
                       style={{
                         width: 64, height: 64, borderRadius: 12, flexShrink: 0, overflow: 'hidden', transition: 'all 0.2s',
-                        border: selectedImg === img ? '2px solid #D42B2B' : '2px solid #2A2A30',
+                        border: selectedImg === img ? '2px solid #f58220' : '2px solid #1e1e20',
                         opacity: selectedImg === img ? 1 : 0.6,
-                        boxShadow: selectedImg === img ? '0 0 15px rgba(212,43,43,0.3)' : 'none',
+                        boxShadow: selectedImg === img ? '0 0 15px rgba(245,130,32,0.3)' : 'none',
                         background: 'transparent', cursor: 'pointer', padding: 0
                       }}
                       onMouseEnter={e => { if (selectedImg !== img) { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = '#505060'; } }}
-                      onMouseLeave={e => { if (selectedImg !== img) { e.currentTarget.style.opacity = 0.6; e.currentTarget.style.borderColor = '#2A2A30'; } }}
+                      onMouseLeave={e => { if (selectedImg !== img) { e.currentTarget.style.opacity = 0.6; e.currentTarget.style.borderColor = '#1e1e20'; } }}
                     >
                       <img src={img} alt={`${product.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#fff' }} />
                     </button>
@@ -222,9 +238,9 @@ export default function ProductDetail() {
           </div>
 
           {/* Info Column */}
-          <div style={{ width: '100%', flex: '1 1 500px', maxWidth: '100%', padding: '0.5rem 0' }}>
+          <div className="w-full lg:flex-1 lg:w-1/2 py-2">
             <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ fontSize: '0.65rem', fontWeight: 800, color: '#FF7070', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 12, background: 'rgba(212,43,43,0.1)', display: 'inline-block', padding: '4px 12px', borderRadius: 99, border: '1px solid rgba(212,43,43,0.2)' }}>
+              <p style={{ fontSize: '0.65rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 12, background: 'rgba(245,130,32,0.1)', display: 'inline-block', padding: '4px 12px', borderRadius: 99, border: '1px solid rgba(245,130,32,0.2)' }}>
                 {product.brand || product.category || 'NeoTech Partner'}
               </p>
               <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: '#E8E8F0', lineHeight: 1.1, marginBottom: 8, letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: 'Rajdhani, sans-serif' }}>
@@ -244,17 +260,17 @@ export default function ProductDetail() {
                 </div>
               )}
               {product.length && (
-                <span style={{ display: 'inline-block', background: '#1E1E22', color: '#9898A8', fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16, border: '1px solid #2A2A30' }}>
+                <span style={{ display: 'inline-block', background: '#0a0a0c', color: '#9898A8', fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16, border: '1px solid #1e1e20' }}>
                   {product.length}
                 </span>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#9898A8' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><CheckCircle size={14} color="#22c55e" /> In Stock</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ShieldCheck size={14} color="#D42B2B" /> Official Warranty</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><CheckCircle size={14} color="#4ade80" /> In Stock</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ShieldCheck size={14} color="#f58220" /> Official Warranty</span>
               </div>
             </div>
 
-            <div style={{ borderTop: '1px solid #2A2A30', paddingTop: '1.5rem', marginBottom: '2rem' }}>
+            <div style={{ borderTop: '1px solid #1e1e20', paddingTop: '1.5rem', marginBottom: '2rem' }}>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 8 }}>
                 <span style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 800, color: '#E8E8F0', letterSpacing: '0.02em', fontFamily: 'Rajdhani, sans-serif' }}>
                   {fmt(product.pss && product.pss > 0 ? product.pss : price)}
@@ -273,32 +289,32 @@ export default function ProductDetail() {
               <button 
                 onClick={handleBuyOnce}
                 style={{
-                  width: '100%', background: 'linear-gradient(135deg,#D42B2B,#A01E1E)', color: '#fff',
+                  width: '100%', background: 'linear-gradient(135deg, #f58220, #c46516)', color: '#000',
                   border: 'none', padding: '1rem', borderRadius: 12, fontSize: '0.85rem', fontWeight: 800,
                   textTransform: 'uppercase', letterSpacing: '0.15em', transition: 'all 0.25s ease',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                  boxShadow: '0 8px 24px rgba(212,43,43,0.3)', cursor: 'pointer'
+                  boxShadow: '0 8px 24px rgba(245,130,32,0.3)', cursor: 'pointer'
                 }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(212,43,43,0.45)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,43,43,0.3)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(245,130,32,0.45)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,130,32,0.3)'; }}
               >
                 <ShoppingBag size={18} /> Buy Once Now — {fmt(product.pss && product.pss > 0 ? product.pss : price)}
               </button>
             </div>
 
             {/* Installment Payment Section */}
-            <div style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }}>
+            <div style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px rgba(0,0,0,0.5)' }}>
               <button
                 style={{
                   width: '100%', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: '#1E1E22', border: 'none', cursor: 'pointer', transition: 'background 0.2s'
+                  background: '#111', border: 'none', cursor: 'pointer', transition: 'background 0.2s'
                 }}
                 onClick={() => setShowInstallment(v => !v)}
-                onMouseEnter={e => e.currentTarget.style.background = '#2A2A30'}
-                onMouseLeave={e => e.currentTarget.style.background = '#1E1E22'}
+                onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
+                onMouseLeave={e => e.currentTarget.style.background = '#111'}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(212,43,43,0.1)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF7070', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.3)', color: '#f58220', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <i className="fas fa-calendar-alt" style={{ fontSize: '0.85rem' }}></i>
                   </div>
                   <span style={{ fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.85rem', fontFamily: 'Rajdhani, sans-serif' }}>Pay in Installments</span>
@@ -310,13 +326,13 @@ export default function ProductDetail() {
                 <div style={{ padding: '1.5rem', borderTop: '1px solid #2A2A30' }}>
                   
                   {/* Frequency Toggle */}
-                  <div style={{ display: 'flex', background: '#1E1E22', padding: 6, borderRadius: 12, marginBottom: '1.5rem', width: '100%', maxWidth: 320, margin: '0 auto 1.5rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)', border: '1px solid #2A2A30' }}>
+                  <div style={{ display: 'flex', background: '#111', padding: 6, borderRadius: 12, marginBottom: '1.5rem', width: '100%', maxWidth: 320, margin: '0 auto 1.5rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)', border: '1px solid #1e1e20' }}>
                     <button
                       style={{
                         flex: 1, padding: '0.5rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', borderRadius: 8, transition: 'all 0.2s', border: 'none', cursor: 'pointer',
-                        background: paymentFrequency === 'monthly' ? '#D42B2B' : 'transparent',
-                        color: paymentFrequency === 'monthly' ? '#fff' : '#707080',
-                        boxShadow: paymentFrequency === 'monthly' ? '0 4px 12px rgba(212,43,43,0.3)' : 'none'
+                        background: paymentFrequency === 'monthly' ? '#f58220' : 'transparent',
+                        color: paymentFrequency === 'monthly' ? '#000' : '#707080',
+                        boxShadow: paymentFrequency === 'monthly' ? '0 4px 12px rgba(245,130,32,0.3)' : 'none'
                       }}
                       onClick={() => setPaymentFrequency('monthly')}
                     >
@@ -325,9 +341,9 @@ export default function ProductDetail() {
                     <button
                       style={{
                         flex: 1, padding: '0.5rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', borderRadius: 8, transition: 'all 0.2s', border: 'none', cursor: 'pointer',
-                        background: paymentFrequency === 'weekly' ? '#D42B2B' : 'transparent',
-                        color: paymentFrequency === 'weekly' ? '#fff' : '#707080',
-                        boxShadow: paymentFrequency === 'weekly' ? '0 4px 12px rgba(212,43,43,0.3)' : 'none'
+                        background: paymentFrequency === 'weekly' ? '#f58220' : 'transparent',
+                        color: paymentFrequency === 'weekly' ? '#000' : '#707080',
+                        boxShadow: paymentFrequency === 'weekly' ? '0 4px 12px rgba(245,130,32,0.3)' : 'none'
                       }}
                       onClick={() => setPaymentFrequency('weekly')}
                     >
@@ -346,11 +362,11 @@ export default function ProductDetail() {
                           key={n}
                           style={{
                             width: 48, height: 48, borderRadius: 12, fontWeight: 800, fontSize: '1.1rem', transition: 'all 0.2s', border: '1px solid', cursor: 'pointer',
-                            background: installments === n ? '#D42B2B' : '#1E1E22',
-                            color: installments === n ? '#fff' : '#C8C8D4',
-                            borderColor: installments === n ? '#FF7070' : '#2A2A30',
+                            background: installments === n ? '#f58220' : '#111',
+                            color: installments === n ? '#000' : '#C8C8D4',
+                            borderColor: installments === n ? '#c46516' : '#1e1e20',
                             transform: installments === n ? 'translateY(-2px)' : 'none',
-                            boxShadow: installments === n ? '0 8px 16px rgba(212,43,43,0.3)' : 'none'
+                            boxShadow: installments === n ? '0 8px 16px rgba(245,130,32,0.3)' : 'none'
                           }}
                           onClick={() => setInstallments(n)}
                         >
@@ -361,34 +377,34 @@ export default function ProductDetail() {
                   </div>
 
                   {/* Breakdown */}
-                  <div style={{ background: '#1E1E22', border: '1px solid #2A2A30', borderRadius: 16, padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.2)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #2A2A30' }}>
+                  <div style={{ background: '#111', border: '1px solid #1e1e20', borderRadius: 16, padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.2)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1e1e20' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#707080' }}>Interest rate</span>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: displayRate > 0 ? '#E8E8F0' : '#D42B2B' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: displayRate > 0 ? '#E8E8F0' : '#f58220' }}>
                         {displayRate}% {displayRate === 0 && '🎉'}
                         {paymentFrequency === 'weekly' && INTEREST_RATES_PERCENT[installments] > 0 && (
-                          <span style={{ marginLeft: 4, color: '#D42B2B', fontWeight: 700, fontSize: '0.65rem' }}>(½ of monthly)</span>
+                          <span style={{ marginLeft: 4, color: '#f58220', fontWeight: 700, fontSize: '0.65rem' }}>(½ of monthly)</span>
                         )}
                       </span>
                     </div>
                     {interestAmt > 0 && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #2A2A30' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1e1e20' }}>
                         <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#707080' }}>Interest added</span>
                         <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#E8E8F0' }}>{fmt(interestAmt)}</span>
                       </div>
                     )}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #2A2A30' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1e1e20' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#707080' }}>Total to pay</span>
                       <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#E8E8F0' }}>{fmt(total)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#9898A8' }}>{paymentFrequency === 'monthly' ? 'Monthly payment' : 'Weekly payment'}</span>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#D42B2B' }}>{fmt(periodPayment)} <span style={{ fontSize: '0.65rem', color: '#707080', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em' }}>/{paymentFrequency === 'weekly' ? 'wk' : 'mo'}</span></span>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f58220' }}>{fmt(periodPayment)} <span style={{ fontSize: '0.65rem', color: '#707080', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em' }}>/{paymentFrequency === 'weekly' ? 'wk' : 'mo'}</span></span>
                     </div>
                   </div>
                   
-                  <div style={{ background: 'rgba(212,43,43,0.05)', border: '1px solid rgba(212,43,43,0.15)', borderRadius: 12, padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: 12 }}>
-                    <i className="fas fa-info-circle" style={{ color: '#D42B2B', marginTop: 2 }}></i>
+                  <div style={{ background: 'rgba(245,130,32,0.05)', border: '1px solid rgba(245,130,32,0.15)', borderRadius: 12, padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: 12 }}>
+                    <i className="fas fa-info-circle" style={{ color: '#f58220', marginTop: 2 }}></i>
                     <p style={{ fontSize: '0.7rem', color: '#9898A8', fontWeight: 500, lineHeight: 1.6 }}>
                       <strong style={{ color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.65rem' }}>How multi-item orders work:</strong> Items with the exact same payment plan are processed together. Mixes of different plans require you to unify them or split them at checkout.
                     </p>
@@ -396,14 +412,14 @@ export default function ProductDetail() {
 
                   <button 
                     style={{
-                      width: '100%', background: '#1E1E22', border: '1px solid #2A2A30', color: '#E8E8F0',
+                      width: '100%', background: '#111', border: '1px solid #1e1e20', color: '#E8E8F0',
                       padding: '1rem', borderRadius: 12, fontSize: '0.75rem', fontWeight: 800,
                       textTransform: 'uppercase', letterSpacing: '0.15em', transition: 'all 0.25s ease',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer'
                     }}
                     onClick={handleInstallment}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#D42B2B'; e.currentTarget.style.borderColor = '#FF7070'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#1E1E22'; e.currentTarget.style.borderColor = '#2A2A30'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f58220'; e.currentTarget.style.borderColor = '#c46516'; e.currentTarget.style.color = '#000'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.borderColor = '#1e1e20'; e.currentTarget.style.color = '#E8E8F0'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     Start {paymentFrequency === 'weekly' ? 'Weekly' : 'Monthly'} Plan
                   </button>
@@ -415,23 +431,23 @@ export default function ProductDetail() {
         </div>
 
         {/* REVIEWS SECTION */}
-        <div style={{ marginTop: '4rem', borderTop: '1px solid #2A2A30', paddingTop: '3rem' }}>
+        <div style={{ marginTop: '4rem', borderTop: '1px solid #1e1e20', paddingTop: '3rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2rem', fontFamily: 'Rajdhani, sans-serif' }}>Customer Reviews</h2>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem' }}>
             {/* Reviews List */}
             <div style={{ width: '100%', flex: '1 1 60%' }}>
               {reviews.length === 0 ? (
-                <div style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 20, padding: '2rem', textAlign: 'center' }}>
+                <div style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 20, padding: '2rem', textAlign: 'center' }}>
                   <p style={{ color: '#707080', fontWeight: 500, fontSize: '0.85rem' }}>No reviews yet. Be the first to share your experience!</p>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {reviews.map((review) => (
-                    <div key={review.id} style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 16, padding: '1.5rem' }}>
+                    <div key={review.id} style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 16, padding: '1.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1E1E22', color: '#D42B2B', border: '1px solid #2A2A30', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>
+                          <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#111', color: '#f58220', border: '1px solid #1e1e20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>
                             {review.userName?.charAt(0) || 'U'}
                           </div>
                           <div>
@@ -456,13 +472,13 @@ export default function ProductDetail() {
 
             {/* Leave a Review Form */}
             <div style={{ width: '100%', flex: '1 1 30%' }}>
-              <div style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 20, padding: '1.5rem', position: 'sticky', top: 32 }}>
+              <div style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 20, padding: '1.5rem', position: 'sticky', top: 32 }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', fontFamily: 'Rajdhani, sans-serif' }}>Write a Review</h3>
                 
                 {!user ? (
-                  <div style={{ background: '#1E1E22', border: '1px solid #2A2A30', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
+                  <div style={{ background: '#111', border: '1px solid #1e1e20', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
                     <p style={{ color: '#707080', fontSize: '0.85rem', marginBottom: '1rem' }}>Please sign in to share your thoughts about this product.</p>
-                    <Link to="/login" style={{ display: 'inline-block', background: '#D42B2B', color: '#fff', fontWeight: 800, padding: '0.75rem 1.5rem', borderRadius: 8, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none' }}>Sign In</Link>
+                    <Link to="/login" style={{ display: 'inline-block', background: '#f58220', color: '#000', fontWeight: 800, padding: '0.75rem 1.5rem', borderRadius: 8, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none' }}>Sign In</Link>
                   </div>
                 ) : (
                   <form onSubmit={submitReview} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -474,7 +490,7 @@ export default function ProductDetail() {
                             key={star}
                             type="button"
                             onClick={() => setNewRating(star)}
-                            style={{ fontSize: '1.25rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'transform 0.2s', padding: 0, color: star <= newRating ? '#F0A500' : '#2A2A30' }}
+                            style={{ fontSize: '1.25rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'transform 0.2s', padding: 0, color: star <= newRating ? '#F0A500' : '#1e1e20' }}
                             onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
                             onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                           >
@@ -492,10 +508,10 @@ export default function ProductDetail() {
                         placeholder="What did you like or dislike?"
                         rows="4"
                         style={{
-                          width: '100%', background: '#1E1E22', border: '1px solid #2A2A30', borderRadius: 12, padding: '0.75rem', fontSize: '0.85rem', color: '#E8E8F0', resize: 'none', outline: 'none', transition: 'border-color 0.2s', fontFamily: 'Inter, sans-serif'
+                          width: '100%', background: '#111', border: '1px solid #1e1e20', borderRadius: 12, padding: '0.75rem', fontSize: '0.85rem', color: '#E8E8F0', resize: 'none', outline: 'none', transition: 'border-color 0.2s', fontFamily: 'Inter, sans-serif'
                         }}
-                        onFocus={e => e.target.style.borderColor = '#D42B2B'}
-                        onBlur={e => e.target.style.borderColor = '#2A2A30'}
+                        onFocus={e => e.target.style.borderColor = '#f58220'}
+                        onBlur={e => e.target.style.borderColor = '#1e1e20'}
                         required
                       ></textarea>
                     </div>
@@ -504,10 +520,10 @@ export default function ProductDetail() {
                       type="submit"
                       disabled={isSubmittingReview}
                       style={{
-                        width: '100%', background: '#D42B2B', color: '#fff', fontWeight: 800, padding: '0.75rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', border: 'none', cursor: isSubmittingReview ? 'not-allowed' : 'pointer', opacity: isSubmittingReview ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s'
+                        width: '100%', background: '#f58220', color: '#000', fontWeight: 800, padding: '0.75rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', border: 'none', cursor: isSubmittingReview ? 'not-allowed' : 'pointer', opacity: isSubmittingReview ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s'
                       }}
-                      onMouseEnter={e => { if (!isSubmittingReview) e.currentTarget.style.background = '#FF3030'; }}
-                      onMouseLeave={e => { if (!isSubmittingReview) e.currentTarget.style.background = '#D42B2B'; }}
+                      onMouseEnter={e => { if (!isSubmittingReview) e.currentTarget.style.background = '#c46516'; }}
+                      onMouseLeave={e => { if (!isSubmittingReview) e.currentTarget.style.background = '#f58220'; }}
                     >
                       {isSubmittingReview ? (
                         <><i className="fas fa-circle-notch fa-spin"></i> Submitting...</>

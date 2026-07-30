@@ -82,6 +82,11 @@ export default function Shop() {
 
     useEffect(() => {
         setLoading(true);
+        if (!db) {
+            setProducts(DEMO_PRODUCTS);
+            setLoading(false);
+            return;
+        }
         const unsubscribe = onSnapshot(collection(db, 'products'), (snap) => {
             let items = snap.docs.map(d => ensureInventoryFields({ id: d.id, ...d.data() })).filter(p => !p.is_hidden);
             if (items.length === 0) {
@@ -250,8 +255,18 @@ export default function Shop() {
             {/* ── Main Content Layout ── */}
             <div className="flex flex-col md:flex-row w-full max-w-[82rem] mx-auto px-4 md:px-6 py-8 gap-8 flex-1">
 
+                {/* Mobile Filter Toggle */}
+                <div className="md:hidden w-full flex justify-end mb-[-1rem]">
+                    <button 
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        className="bg-[#0a0a0a] border border-[#222] text-[#f58220] px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+                    >
+                        <i className="fas fa-filter"></i> {sidebarOpen ? 'Hide Filters' : 'Show Filters'}
+                    </button>
+                </div>
+
                 {/* Sidebar Filters */}
-                <aside className="w-full md:w-[240px] flex-shrink-0">
+                <aside className={`w-full md:w-[240px] flex-shrink-0 ${sidebarOpen ? 'block' : 'hidden'} md:block`}>
                     <div style={{
                         background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 16,
                         overflow: 'hidden', position: 'sticky', top: 100,

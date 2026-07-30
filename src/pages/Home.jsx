@@ -66,6 +66,8 @@ const HERO_SLIDES = [
     }
 ];
 
+import { DEMO_PRODUCTS } from '../utils/demoProducts';
+
 export default function Home() {
     const navigate = useNavigate();
     const { user } = useAuthStore();
@@ -88,6 +90,10 @@ export default function Home() {
         const fetchData = async () => {
             try {
                 setFeatLoading(true);
+                if (!db) {
+                    setBestSelling(DEMO_PRODUCTS.slice(0, 4));
+                    return;
+                }
                 const qRecent = query(collection(db, "products"), limit(4));
                 const snapRecent = await getDocs(qRecent);
                 let products = snapRecent.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -164,13 +170,13 @@ export default function Home() {
                                     <span style={{ display: 'inline-block', width: '8px', height: '8px', background: '#f58220', borderRadius: '50%', marginRight: '8px', animation: 'pulse 2s infinite' }}></span>
                                     {slide.badge}
                                 </div>
-                                <h1 className="hero-glow-text" style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', lineHeight: 1.1, marginBottom: '1.5rem', fontWeight: 900, whiteSpace: 'pre-line' }}>
+                                <h1 className="hero-glow-text" style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(1.5rem, 8vw, 4.5rem)', lineHeight: 1.1, marginBottom: '1.5rem', fontWeight: 900, whiteSpace: 'pre-line' }}>
                                     {slide.title1}<span className="gradient-text">{slide.titleGradient1}</span>{slide.title2}<span className="gradient-text">{slide.titleGradient2}</span>{slide.title3}
                                 </h1>
-                                <p style={{ fontSize: '1.1rem', color: '#a0a0b0', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>{slide.desc}</p>
-                                <div className="hero-btns" style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                                    <Link to="/products" className="btn btn-primary pulse-ring-btn" style={{ padding: '1rem 2rem', fontSize: '1rem', borderRadius: '12px' }}>Build Your Array</Link>
-                                    <a href="#integration" className="btn btn-outline" style={{ padding: '1rem 2rem', fontSize: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)' }}>Explore The Tech</a>
+                                <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6, padding: '0 1rem' }}>{slide.desc}</p>
+                                <div className="hero-btns" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', padding: '0 1rem' }}>
+                                    <Link to="/products" className="btn btn-primary pulse-ring-btn w-full sm:w-auto text-center" style={{ padding: '1rem 2rem', fontSize: '1rem', borderRadius: '12px' }}>Build Your Array</Link>
+                                    <a href="#integration" className="btn btn-outline w-full sm:w-auto text-center" style={{ padding: '1rem 2rem', fontSize: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)' }}>Explore The Tech</a>
                                 </div>
                             </div>
                         ))}
@@ -199,26 +205,26 @@ export default function Home() {
                 {/* ADVANCED STATS BANNER */}
                 <section className="stats-banner relative z-20" style={{ marginTop: '-60px' }}>
                     <div className="container">
-                        <div className="stats-grid glass-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1px', background: 'rgba(26,26,26,0.5)', padding: '1px', borderRadius: '24px' }}>
-                            <div className="stat-card reveal-up active" style={{ background: '#0a0a0c', borderRadius: '23px 0 0 23px' }}>
+                        <div className="stats-grid glass-panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1px', background: 'rgba(26,26,26,0.5)', padding: '1px', borderRadius: '24px', overflow: 'hidden' }}>
+                            <div className="stat-card reveal-up active" style={{ background: '#0a0a0c' }}>
                                 <div className="icon-wrapper"><i className="fas fa-server"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>15,400+</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem', fontWeight: 700 }}>Systems Deployed</p>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>15,400+</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Systems Deployed</p>
                             </div>
                             <div className="stat-card reveal-up active" style={{ transitionDelay: '0.1s', background: '#0a0a0c' }}>
                                 <div className="icon-wrapper"><i className="fas fa-bolt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>99.9%</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem', fontWeight: 700 }}>Uptime Reliability</p>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>99.9%</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Uptime Reliability</p>
                             </div>
                             <div className="stat-card reveal-up active" style={{ transitionDelay: '0.2s', background: '#0a0a0c' }}>
                                 <div className="icon-wrapper"><i className="fas fa-eye"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>24/7</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem', fontWeight: 700 }}>AI Surveillance</p>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>24/7</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>AI Surveillance</p>
                             </div>
-                            <div className="stat-card reveal-up active" style={{ transitionDelay: '0.3s', background: '#0a0a0c', borderRadius: '0 23px 23px 0' }}>
+                            <div className="stat-card reveal-up active" style={{ transitionDelay: '0.3s', background: '#0a0a0c' }}>
                                 <div className="icon-wrapper"><i className="fas fa-shield-alt"></i></div>
-                                <h3 className="counter gradient-text" style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>10 Yrs</h3>
-                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.8rem', fontWeight: 700 }}>Hardware Warranty</p>
+                                <h3 className="counter gradient-text" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 900, marginBottom: '0.5rem' }}>10 Yrs</h3>
+                                <p style={{ color: '#777', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.7rem', fontWeight: 700 }}>Hardware Warranty</p>
                             </div>
                         </div>
                     </div>
@@ -228,7 +234,7 @@ export default function Home() {
                 <section id="integration" className="integration section-padding" style={{ position: 'relative', overflow: 'hidden' }}>
                     <div className="container">
                         <div className="section-header reveal-up active" style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 4rem' }}>
-                            <h2 className="section-title" style={{ fontSize: '3rem', fontWeight: 900 }}>INTELLIGENT <span className="gradient-text">INTEGRATION HUB</span></h2>
+                            <h2 className="section-title" style={{ fontSize: 'clamp(2rem, 6vw, 3rem)', fontWeight: 900 }}>INTELLIGENT <span className="gradient-text">INTEGRATION HUB</span></h2>
                             <p className="section-subtitle" style={{ fontSize: '1.1rem', color: '#a0a0b0' }}>Our proprietary central routing module guarantees your security array remains active even during total grid collapse, drawing intelligently from hybrid inverter reserves.</p>
                         </div>
 
@@ -245,7 +251,7 @@ export default function Home() {
                                 <path className="flow-particle" d="M 500,250 L 500,400" style={{ animationDelay: '0.5s' }} />
                             </svg>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', position: 'relative', zIndex: 10 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', position: 'relative', zIndex: 10 }}>
                                 <div className="node glass-panel reveal-up active">
                                     <div className="node-icon-ring"><i className="fas fa-solar-panel"></i></div>
                                     <h4 style={{ textAlign: 'center', color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>AllenJoe Pro Inverter</h4>
@@ -314,12 +320,12 @@ export default function Home() {
                 {/* ADVANCED SHOP */}
                 <section id="products" className="products section-padding" style={{ background: '#0a0a0c' }}>
                     <div className="container">
-                        <div className="section-header flex-between reveal-up active" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
-                            <div>
-                                <h2 className="section-title" style={{ fontSize: '2.5rem', fontWeight: 900 }}>Advanced <span className="gradient-text">Shop</span></h2>
-                                <p className="section-subtitle" style={{ fontSize: '1.1rem', color: '#a0a0b0', marginTop: '0.5rem' }}>Explore our catalog of premium solar and security products.</p>
+                        <div className="section-header flex-between reveal-up active flex-wrap gap-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
+                            <div className="w-full sm:w-auto">
+                                <h2 className="section-title" style={{ fontSize: 'clamp(1.8rem, 6vw, 2.5rem)', fontWeight: 900 }}>Advanced <span className="gradient-text">Shop</span></h2>
+                                <p className="section-subtitle" style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', marginTop: '0.5rem' }}>Explore our catalog of premium solar and security products.</p>
                             </div>
-                            <Link to="/products" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Link to="/products" className="btn btn-outline whitespace-nowrap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 View All <i className="fas fa-arrow-right"></i>
                             </Link>
                         </div>
@@ -437,111 +443,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* ADVANCED SHOP */}
-                <section id="shop" className="shop section-padding">
-                    <div className="container">
-                        <div className="section-header reveal active" style={{ textAlign: 'center' }}>
-                            <h2 className="section-title">ADVANCED <span className="gradient-text">HARDWARE</span> SHOP</h2>
-                            <p className="section-subtitle">Select individual components or purchase pre-configured bundles for maximum savings.</p>
-                        </div>
-
-                        <div className="filters reveal active">
-                            <button className="filter-btn active">All Hardware</button>
-                            <button className="filter-btn" onClick={() => navigate('/products?cat=Inverters')}>Inverters</button>
-                            <button className="filter-btn" onClick={() => navigate('/products?cat=Solar Panels')}>Solar Arrays</button>
-                            <button className="filter-btn" onClick={() => navigate('/products?cat=CCTV')}>CCTV Cameras</button>
-                        </div>
-
-                        {/* Horizontal scroll wrapper */}
-                        <div className="home-products-scroll-track">
-                            {/* Static Mock Item 1 */}
-                            <div className="product-card reveal active">
-                                <div className="product-badge">BEST SELLER</div>
-                                <div className="product-img-wrapper" onClick={() => navigate('/products?cat=Inverters')}>
-                                    <img src="/images/hybrid_inverter.png" alt="Inverter" className="product-img" />
-                                </div>
-                                <div className="product-content">
-                                    <div className="product-rating">★★★★★ (124)</div>
-                                    <h3 className="product-title">Pro Hybrid Inverter X1</h3>
-                                    <p className="product-desc">Seamless grid-tie and off-grid capabilities with intelligent battery management.</p>
-                                    <div className="product-specs">
-                                        <div className="spec-item"><span className="spec-label">Output</span><span className="spec-value">10kW</span></div>
-                                        <div className="spec-item"><span className="spec-label">Phase</span><span className="spec-value">3-Phase</span></div>
-                                        <div className="spec-item"><span className="spec-label">Battery</span><span className="spec-value">48V</span></div>
-                                    </div>
-                                    <div className="product-actions">
-                                        <button className="btn btn-outline" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Inverters')}>Tech Specs</button>
-                                        <button className="btn btn-primary" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Inverters')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Static Mock Item 2 */}
-                            <div className="product-card reveal active" style={{ transitionDelay: '0.1s' }}>
-                                <div className="product-img-wrapper" onClick={() => navigate('/products?cat=Solar Panels')}>
-                                    <img src="https://placehold.co/600x500/222/f58220?text=Mono+Solar+Panel" alt="Solar Panel" className="product-img" />
-                                </div>
-                                <div className="product-content">
-                                    <div className="product-rating">★★★★★ (89)</div>
-                                    <h3 className="product-title">Monocrystalline Array</h3>
-                                    <p className="product-desc">Tier 1 solar panels engineered for extreme weather and low-light yields.</p>
-                                    <div className="product-specs">
-                                        <div className="spec-item"><span className="spec-label">Power</span><span className="spec-value">550W</span></div>
-                                        <div className="spec-item"><span className="spec-label">Eff.</span><span className="spec-value">21.5%</span></div>
-                                        <div className="spec-item"><span className="spec-label">Warr.</span><span className="spec-value">25 Yr</span></div>
-                                    </div>
-                                    <div className="product-actions">
-                                        <button className="btn btn-outline" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Solar Panels')}>Tech Specs</button>
-                                        <button className="btn btn-primary" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Solar Panels')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Static Mock Item 3 */}
-                            <div className="product-card reveal active" style={{ transitionDelay: '0.2s' }}>
-                                <div className="product-badge" style={{ background: '#e74c3c' }}>NEW ARRIVAL</div>
-                                <div className="product-img-wrapper" onClick={() => navigate('/products?cat=CCTV')}>
-                                    <img src="/images/hero_cctv.png" alt="CCTV Camera" className="product-img" />
-                                </div>
-                                <div className="product-content">
-                                    <div className="product-rating">★★★★★ (42)</div>
-                                    <h3 className="product-title">4K AI PTZ Security Cam</h3>
-                                    <p className="product-desc">PoE enabled smart dome camera with 360° rotation and auto-human tracking.</p>
-                                    <div className="product-specs">
-                                        <div className="spec-item"><span className="spec-label">Res</span><span className="spec-value">4K UHD</span></div>
-                                        <div className="spec-item"><span className="spec-label">Lens</span><span className="spec-value">Optical 4x</span></div>
-                                        <div className="spec-item"><span className="spec-label">Vision</span><span className="spec-value">Color Night</span></div>
-                                    </div>
-                                    <div className="product-actions">
-                                        <button className="btn btn-outline" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=CCTV')}>Tech Specs</button>
-                                        <button className="btn btn-primary" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=CCTV')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Static Mock Item 4 – Batteries */}
-                            <div className="product-card reveal active" style={{ transitionDelay: '0.3s' }}>
-                                <div className="product-img-wrapper" onClick={() => navigate('/products?cat=Batteries')}>
-                                    <img src="https://placehold.co/600x500/222/f58220?text=Lithium+Battery" alt="Battery" className="product-img" />
-                                </div>
-                                <div className="product-content">
-                                    <div className="product-rating">★★★★★ (67)</div>
-                                    <h3 className="product-title">Lithium Battery Bank</h3>
-                                    <p className="product-desc">Scalable deep-cycle lithium storage for complete off-grid independence.</p>
-                                    <div className="product-specs">
-                                        <div className="spec-item"><span className="spec-label">Cap.</span><span className="spec-value">5kWh</span></div>
-                                        <div className="spec-item"><span className="spec-label">Cycles</span><span className="spec-value">6000+</span></div>
-                                        <div className="spec-item"><span className="spec-label">Volt</span><span className="spec-value">48V</span></div>
-                                    </div>
-                                    <div className="product-actions">
-                                        <button className="btn btn-outline" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Batteries')}>Tech Specs</button>
-                                        <button className="btn btn-primary" style={{ padding: '0.6rem', fontSize: '0.8rem' }} onClick={() => navigate('/products?cat=Batteries')}>Add to Bundle</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* TESTIMONIALS */}
                 <section className="testimonials section-padding">

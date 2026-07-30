@@ -6,7 +6,7 @@ export default function Footer() {
     const [email, setEmail] = useState('');
     const [isSubscribed, setIsSubscribed] = useState(false);
 
-    const WHATSAPP_LINK = 'https://wa.me/2348135933346?text=Hi%20Allenjoe%2C%20I%20want%20to%20enquire%20about%20a%20system.';
+    const WHATSAPP_LINK = 'https://wa.me/c/2348171172822';
 
     const handleSubscribe = (e) => {
         e.preventDefault();

@@ -86,7 +86,7 @@ const TERMS_CONTENT = (
         <span className="w-5 h-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0">11</span>
         Contact Information
       </h3>
-      <p>WhatsApp/Phone: <a href="https://wa.me/2348135933346" target="_blank" rel="noreferrer">08135933346</a> | Address: C38 Robinson Pz deco road Warri delta state</p>
+      <p>WhatsApp/Phone: <a href="https://wa.me/c/2348171172822" target="_blank" rel="noreferrer">08171172822</a> | Address: C38 Robinson Pz deco road Warri delta state</p>
     </div>
 
     <div className="bg-gray-100 border border-gray-200 rounded-sm p-4 text-center">

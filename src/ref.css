@@ -251,3 +251,39 @@
     }
 }
 
+/* Home Products Horizontal Scroll */
+.home-products-scroll-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 2rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: #f58220 #111;
+}
+
+.home-products-scroll-track::-webkit-scrollbar {
+    height: 8px;
+}
+.home-products-scroll-track::-webkit-scrollbar-track {
+    background: #111;
+    border-radius: 4px;
+}
+.home-products-scroll-track::-webkit-scrollbar-thumb {
+    background: #f58220;
+    border-radius: 4px;
+}
+
+.home-products-scroll-track .ref-product-card {
+    min-width: 320px;
+    max-width: 360px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+}
+
+@media (max-width: 768px) {
+    .home-products-scroll-track .ref-product-card {
+        min-width: 280px;
+        max-width: 300px;
+    }
+}

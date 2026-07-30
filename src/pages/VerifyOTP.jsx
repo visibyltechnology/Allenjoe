@@ -7,11 +7,6 @@ import { sendRegistrationOTPEmail } from '../utils/email';
 import toast from 'react-hot-toast';
 import Footer from '../components/Footer';
 
-const NT = {
-  bg: '#0E0E10', card: '#161618', border: '#2A2A30',
-  primary: '#D42B2B', textMain: '#E8E8F0', textMuted: '#707080',
-};
-
 export default function VerifyOTP() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email');
@@ -93,21 +88,14 @@ export default function VerifyOTP() {
     const enteredCode = otp.join('');
     if (enteredCode.length !== 6) { setError('Please enter the 6-digit code.'); toast.error('Please enter the 6-digit code.'); return; }
     if (timeLeft === 0) { setError('OTP has expired. Please request a new one.'); toast.error('OTP has expired.'); return; }
-
     setLoading(true);
     setError('');
     try {
       const storedOTP = sessionStorage.getItem('registrationOTP');
       const dataStr = sessionStorage.getItem('pendingRegistration');
       if (!storedOTP || !dataStr) throw new Error('Session expired. Please register again.');
-      if (enteredCode !== storedOTP) {
-        setError('Invalid OTP code.');
-        toast.error('Invalid OTP code.');
-        setLoading(false);
-        return;
-      }
+      if (enteredCode !== storedOTP) { setError('Invalid OTP code.'); toast.error('Invalid OTP code.'); setLoading(false); return; }
       const pendingData = JSON.parse(dataStr);
-
       let user;
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, pendingData.email, pendingData.password);
@@ -120,19 +108,18 @@ export default function VerifyOTP() {
             user = userCredential.user;
           } catch (signInErr) {
             if (signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password') {
-              throw new Error('An account with this email already exists, but the password entered during registration does not match. Please go to the Login page to sign in or reset your password.');
+              throw new Error('An account with this email already exists. Please log in or reset your password.');
             }
             throw signInErr;
           }
-        } else {
-          throw authErr;
-        }
+        } else { throw authErr; }
       }
-
-      await setDoc(doc(db, 'users', user.uid), {
-        firstName: pendingData.firstName, lastName: pendingData.lastName, phone: pendingData.phone,
-        email: pendingData.email, isAdmin: false, isEmailVerified: true, createdAt: new Date().toISOString()
-      }, { merge: true });
+      if (db) {
+        await setDoc(doc(db, 'users', user.uid), {
+          firstName: pendingData.firstName, lastName: pendingData.lastName, phone: pendingData.phone,
+          email: pendingData.email, isAdmin: false, isEmailVerified: true, createdAt: new Date().toISOString()
+        }, { merge: true });
+      }
       sessionStorage.removeItem('pendingRegistration');
       sessionStorage.removeItem('registrationOTP');
       sessionStorage.removeItem('otpExpiresAt');
@@ -141,11 +128,7 @@ export default function VerifyOTP() {
     } catch (err) {
       console.error(err);
       let errorMsg = err.message || 'Failed to verify OTP. Please try again.';
-      if (err.code === 'auth/invalid-credential') {
-        errorMsg = 'Invalid account credentials. Please try logging in directly.';
-      } else if (err.message.includes('Firebase:')) {
-        errorMsg = err.message.replace(/Firebase:\s*(.*?)\s*\(auth.*\)./, '$1');
-      }
+      if (err.message?.includes('Firebase:')) errorMsg = err.message.replace(/Firebase:\s*(.*?)\s*\(auth.*\)./, '$1');
       setError(errorMsg);
       toast.error(errorMsg);
     } finally { setLoading(false); }
@@ -156,7 +139,7 @@ export default function VerifyOTP() {
     setError('');
     try {
       const dataStr = sessionStorage.getItem('pendingRegistration');
-      if (!dataStr) { setError('Session expired. Please register again.'); toast.error('Session expired. Please register again.'); navigate('/register'); return; }
+      if (!dataStr) { setError('Session expired. Please register again.'); toast.error('Session expired.'); navigate('/register'); return; }
       const pendingData = JSON.parse(dataStr);
       const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
       const newExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
@@ -166,7 +149,7 @@ export default function VerifyOTP() {
         const sent = await sendRegistrationOTPEmail(email, pendingData.firstName || 'Customer', newOtpCode);
         if (sent !== false) { toast.success('A new OTP has been sent to your email.'); }
         else { throw new Error('Email sending returned false'); }
-      } catch (emailErr) { console.error('Email resend error:', emailErr); toast.error('Failed to send OTP email.'); }
+      } catch (emailErr) { console.error(emailErr); toast.error('Failed to send OTP email.'); }
       setOtp(['', '', '', '', '', '']);
       startTimer(newExpiresAt.getTime());
       setError('');
@@ -178,66 +161,63 @@ export default function VerifyOTP() {
   };
 
   const isExpired = timeLeft === 0;
+  const timerColor = isExpired ? '#ef4444' : (timeLeft !== null && timeLeft < 60) ? '#f59e0b' : '#f58220';
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: NT.bg }}>
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem' }}>
-        <div style={{ width: '100%', maxWidth: 480 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506', position: 'relative', overflow: 'hidden' }}>
+      {/* BG glows */}
+      <div style={{ position: 'fixed', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(245,130,32,0.06) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5rem 1rem 2rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100%', maxWidth: 460 }}>
 
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Link to="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
-                <div style={{ background: NT.card, border: `1px solid ${NT.border}`, borderRadius: 12, padding: '0.6rem 1rem', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <i className="fa-solid fa-microchip" style={{ color: NT.primary, fontSize: '1.1rem' }} />
-                  <span style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '1.2rem', fontWeight: 800, color: NT.textMain, letterSpacing: '0.05em' }}>
-                    NEO<span style={{ color: NT.primary }}>TECH</span>
-                  </span>
-                </div>
+            <Link to="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #f58220, #c46516)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 32px rgba(245,130,32,0.4)' }}>
+                <i className="fas fa-bolt" style={{ color: '#000', fontSize: '1.4rem' }} />
+              </div>
+              <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.4rem', fontWeight: 900, letterSpacing: '0.1em', lineHeight: 1 }}>
+                <span style={{ color: '#fff' }}>ALLEN</span><span style={{ color: '#f58220' }}>JOE</span>
               </div>
             </Link>
           </div>
 
           {/* Card */}
-          <div style={{ background: NT.card, border: `1px solid ${NT.border}`, borderRadius: 20, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.5)' }}>
+          <div style={{ background: 'rgba(12,12,15,0.96)', border: '1px solid rgba(245,130,32,0.12)', borderRadius: 24, overflow: 'hidden', backdropFilter: 'blur(20px)', boxShadow: '0 30px 80px rgba(0,0,0,0.7)' }}>
+            <div style={{ height: 3, background: 'linear-gradient(90deg, transparent, #f58220, transparent)' }} />
+
             {/* Header */}
-            <div style={{ background: 'linear-gradient(135deg,#1A1A1E,#161618)', borderBottom: `1px solid ${NT.border}`, padding: '1.75rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div className="bg-circuit" style={{ position: 'absolute', inset: 0, opacity: 0.5, pointerEvents: 'none' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(212,43,43,0.1)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF6060', padding: '3px 12px', borderRadius: 99, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Rajdhani, sans-serif', marginBottom: 10 }}>
-                  <i className="fa-solid fa-envelope" /> Email Verification
-                </div>
-                <h1 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '1.6rem', fontWeight: 800, color: NT.textMain, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 6px' }}>
-                  Verify Your Email
-                </h1>
-                <p style={{ color: NT.textMuted, fontSize: '0.8rem' }}>
-                  We sent a 6-digit code to <strong style={{ color: NT.textMain }}>{email}</strong>
-                </p>
+            <div style={{ padding: '1.75rem 2rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+              <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                <i className="fas fa-envelope-open-text" style={{ color: '#f58220', fontSize: '1.4rem' }} />
               </div>
+              <h1 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.7rem', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 6px' }}>
+                Verify Email
+              </h1>
+              <p style={{ color: '#666', fontSize: '0.8rem', lineHeight: 1.6 }}>
+                We sent a 6-digit code to<br />
+                <strong style={{ color: '#f58220' }}>{email}</strong>
+              </p>
             </div>
 
             {/* Body */}
             <div style={{ padding: '2rem', textAlign: 'center' }}>
               {error && (
-                <div style={{ background: 'rgba(212,43,43,0.08)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF6060', padding: '0.75rem 1rem', borderRadius: 10, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: '0.8rem', fontWeight: 500 }}>
+                <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', padding: '0.75rem 1rem', borderRadius: 10, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: '0.8rem', fontWeight: 500 }}>
                   <i className="fas fa-exclamation-circle" /> {error}
                 </div>
               )}
 
               {/* Timer */}
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: '1.75rem',
-                fontFamily: 'Rajdhani, sans-serif', fontSize: '1.5rem', fontWeight: 800,
-                color: isExpired ? NT.primary : timeLeft !== null && timeLeft < 60 ? '#F0A500' : NT.textMain,
-                letterSpacing: '0.1em',
-              }}>
-                <i className={`fas fa-${isExpired ? 'times-circle' : 'clock'}`} style={{ fontSize: '1rem', color: isExpired ? NT.primary : '#60a5fa' }} />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: '1.75rem', fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.6rem', fontWeight: 900, color: timerColor, letterSpacing: '0.1em', transition: 'color 0.3s' }}>
+                <i className={`fas fa-${isExpired ? 'times-circle' : 'clock'}`} style={{ fontSize: '1rem' }} />
                 {isPageLoading ? '--:--' : formatTime(timeLeft)}
               </div>
 
               <form onSubmit={verifyOTP}>
-                {/* OTP inputs */}
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: '1.75rem' }}>
+                {/* OTP Input Boxes */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: '1.75rem' }}>
                   {otp.map((data, index) => (
                     <input
                       key={index}
@@ -251,64 +231,68 @@ export default function VerifyOTP() {
                       disabled={isPageLoading}
                       className="otp-input"
                       style={{
-                        width: 48, height: 58, textAlign: 'center',
-                        fontFamily: 'Rajdhani, sans-serif', fontSize: '1.5rem', fontWeight: 800, color: data ? NT.primary : NT.textMain,
-                        background: data ? 'rgba(212,43,43,0.06)' : NT.bg,
-                        border: `2px solid ${data ? NT.primary : NT.border}`,
-                        borderRadius: 12, outline: 'none', transition: 'all 0.2s',
-                        boxShadow: data ? '0 0 12px rgba(212,43,43,0.15)' : 'none',
-                        opacity: isPageLoading ? 0.5 : 1,
+                        width: 50, height: 60, textAlign: 'center',
+                        fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.5rem', fontWeight: 900,
+                        color: data ? '#f58220' : '#fff',
+                        background: data ? 'rgba(245,130,32,0.08)' : '#0a0a0c',
+                        border: `2px solid ${data ? '#f58220' : '#1e1e20'}`,
+                        borderRadius: 14, outline: 'none', transition: 'all 0.2s',
+                        boxShadow: data ? '0 0 16px rgba(245,130,32,0.15)' : 'none',
+                        opacity: isPageLoading ? 0.4 : 1,
                       }}
-                      onInput={e => { e.target.style.borderColor = e.target.value ? NT.primary : NT.border; e.target.style.background = e.target.value ? 'rgba(212,43,43,0.06)' : NT.bg; }}
                     />
                   ))}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || isPageLoading}
+                  disabled={loading || isPageLoading || isExpired}
                   style={{
-                    width: '100%', background: loading ? '#2A2A30' : 'linear-gradient(135deg,#D42B2B,#A01E1E)', color: '#fff',
-                    fontFamily: 'Rajdhani, sans-serif', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.12em',
-                    textTransform: 'uppercase', border: 'none', borderRadius: 12, padding: '1rem',
-                    cursor: (loading || isPageLoading) ? 'not-allowed' : 'pointer',
+                    width: '100%',
+                    background: (loading || isPageLoading || isExpired) ? '#111' : 'linear-gradient(135deg, #f58220, #c46516)',
+                    color: (loading || isPageLoading || isExpired) ? '#444' : '#000',
+                    fontFamily: 'Space Grotesk, sans-serif', fontWeight: 900, fontSize: '0.85rem',
+                    letterSpacing: '0.15em', textTransform: 'uppercase', border: 'none', borderRadius: 14,
+                    padding: '1rem', cursor: (loading || isPageLoading || isExpired) ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    boxShadow: loading ? 'none' : '0 6px 24px rgba(212,43,43,0.35)',
-                    transition: 'all 0.3s', opacity: (loading || isPageLoading) ? 0.7 : 1,
+                    boxShadow: (loading || isPageLoading || isExpired) ? 'none' : '0 8px 24px rgba(245,130,32,0.35)',
+                    transition: 'all 0.3s',
                   }}
                 >
-                  {loading ? (
-                    <><i className="fas fa-spinner fa-spin" /> Verifying...</>
-                  ) : (
-                    <><i className="fas fa-check-circle" /> Verify Email</>
-                  )}
+                  {loading
+                    ? <><i className="fas fa-spinner fa-spin" /> Verifying...</>
+                    : <><i className="fas fa-check-circle" /> Verify Code</>
+                  }
                 </button>
               </form>
 
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: `1px solid ${NT.border}`, textAlign: 'center' }}>
-                <p style={{ fontSize: '0.8rem', color: NT.textMuted }}>
+              <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <p style={{ fontSize: '0.8rem', color: '#555' }}>
                   Didn't receive the code?{' '}
                   <button
                     onClick={handleResend}
                     disabled={resending || isPageLoading}
-                    style={{ color: NT.primary, fontWeight: 700, background: 'none', border: 'none', cursor: (resending || isPageLoading) ? 'not-allowed' : 'pointer', fontSize: 'inherit', opacity: (resending || isPageLoading) ? 0.5 : 1, textDecoration: 'underline', textUnderlineOffset: 2, transition: 'color 0.2s' }}
-                    onMouseEnter={e => { if (!resending) e.currentTarget.style.color = '#FF3030'; }}
-                    onMouseLeave={e => e.currentTarget.style.color = NT.primary}
+                    style={{ color: '#f58220', fontWeight: 700, background: 'none', border: 'none', cursor: (resending || isPageLoading) ? 'not-allowed' : 'pointer', fontSize: 'inherit', opacity: (resending || isPageLoading) ? 0.4 : 1, textDecoration: 'underline', textUnderlineOffset: 3, transition: 'color 0.2s' }}
                   >
                     {resending ? 'Sending...' : 'Resend Code'}
                   </button>
                 </p>
+                <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}>
+                  <Link to="/register" style={{ fontSize: '0.75rem', color: '#444', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <i className="fas fa-arrow-left" style={{ fontSize: '0.65rem' }} /> Back to Register
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
-          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: NT.textMuted, fontWeight: 600 }}>
-              <i className="fas fa-shield-alt" style={{ marginRight: 5, color: '#60a5fa' }} /> Secure Verification
-            </span>
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: 6 }}>
+            <i className="fas fa-shield-alt" style={{ color: '#f58220', fontSize: '0.75rem' }} />
+            <span style={{ fontSize: '0.65rem', color: '#444', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Secure Email Verification</span>
           </div>
         </div>
       </div>
+
       <Footer />
     </main>
   );

@@ -1,253 +1,118 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { Link } from 'react-router-dom';
+import { Eye, EyeOff, LogIn, Zap, Shield } from 'lucide-react';
 import Footer from '../components/Footer';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 export default function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-      const userDocRef = doc(db, 'users', userCredential.user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        if (userData.role === 'admin') {
-          toast.success('Welcome back, Admin!');
-          navigate('/admin');
-          return;
-        }
-      }
-
-      toast.success('Successfully logged in!');
-      navigate('/shop');
-    } catch (err) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid email or password. Please try again.');
-        toast.error('Invalid email or password.');
-      } else if (err.message && err.message.toLowerCase().includes('offline')) {
-        setError('Please check your internet connection and try again.');
-        toast.error('Check your internet connection.');
-      } else {
-        setError('Failed to sign in. Please try again later.');
-        toast.error('Failed to sign in. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const inputStyle = {
-    width: '100%',
-    background: '#1E1E22',
-    border: '1px solid #2A2A30',
-    color: '#E8E8F0',
-    borderRadius: 12,
-    padding: '0.875rem 1rem',
-    fontSize: '0.875rem',
-    outline: 'none',
-    transition: 'all 0.25s ease',
-    fontFamily: 'Inter, sans-serif',
-  };
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
-      {/* Page Body */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 1rem' }}>
-        <div style={{ width: '100%', maxWidth: 440 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506', position: 'relative', overflow: 'hidden' }}>
+      {/* Background glow orbs */}
+      <div style={{ position: 'fixed', top: '-20%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,130,32,0.07) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', bottom: '-20%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,130,32,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5rem 1rem 2rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100%', maxWidth: 460 }}>
 
           {/* Logo */}
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Link to="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width: 68, height: 68, borderRadius: '50%',
-                  background: 'linear-gradient(135deg,#D42B2B,#A01E1E)',
-                  border: '2px solid rgba(200,200,212,0.25)',
-                  boxShadow: '0 0 40px rgba(212,43,43,0.4)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  position: 'relative',
-                }}>
-                  <i className="fa-solid fa-microchip" style={{ color: '#fff', fontSize: '1.5rem' }}></i>
-                  {/* circuit dots */}
-                  {[0,90,180,270].map(deg => (
-                    <div key={deg} style={{
-                      position: 'absolute',
-                      width: 5, height: 5, borderRadius: '50%',
-                      background: 'rgba(200,200,212,0.5)',
-                      transform: `rotate(${deg}deg) translateY(-34px)`,
-                    }} />
-                  ))}
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <Link to="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #f58220, #c46516)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(245,130,32,0.4)' }}>
+                <i className="fas fa-bolt" style={{ color: '#000', fontSize: '1.6rem' }} />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.6rem', fontWeight: 900, letterSpacing: '0.1em', lineHeight: 1 }}>
+                  <span style={{ color: '#fff' }}>ALLEN</span><span style={{ color: '#f58220' }}>JOE</span>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '2rem', fontWeight: 800, lineHeight: 1, letterSpacing: '0.05em' }}>
-                    <span style={{ color: '#C8C8D4' }}>Neo</span>
-                    <span style={{ color: '#D42B2B' }}>Tech</span>
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: '#505060', letterSpacing: '0.3em', textTransform: 'uppercase', marginTop: 3 }}>Gadgets</div>
-                </div>
+                <div style={{ fontSize: '0.55rem', color: '#555', letterSpacing: '0.3em', textTransform: 'uppercase', marginTop: 4 }}>Solar & CCTV Automation</div>
               </div>
             </Link>
           </div>
 
           {/* Card */}
-          <div style={{
-            background: '#161618',
-            border: '1px solid #2A2A30',
-            borderRadius: 20,
-            overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-          }}>
-            {/* Card Header */}
-            <div style={{
-              background: 'linear-gradient(135deg,rgba(212,43,43,0.1),rgba(22,22,24,0))',
-              borderBottom: '1px solid #2A2A30',
-              padding: '2rem',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              {/* Subtle circuit top-bar */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,transparent,#D42B2B,transparent)' }} />
-              <h1 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '1.8rem', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+          <div style={{ background: 'rgba(15,15,18,0.95)', border: '1px solid rgba(245,130,32,0.15)', borderRadius: 24, overflow: 'hidden', backdropFilter: 'blur(20px)', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+            {/* Orange top line */}
+            <div style={{ height: 3, background: 'linear-gradient(90deg, transparent, #f58220, transparent)' }} />
+
+            {/* Header */}
+            <div style={{ padding: '2rem 2rem 1.5rem', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.25)', color: '#f58220', padding: '4px 14px', borderRadius: 99, fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <Zap size={10} /> Member Portal
+              </div>
+              <h1 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.9rem', fontWeight: 900, color: '#fff', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
                 Welcome Back
               </h1>
-              <p style={{ color: '#707080', fontSize: '0.85rem' }}>Sign in to your NeoTech account</p>
+              <p style={{ color: '#555', fontSize: '0.82rem', marginTop: 6 }}>Sign in to access your ALLENJOE account</p>
             </div>
 
-            {/* Card Body */}
+            {/* Body */}
             <div style={{ padding: '2rem' }}>
-              {error && (
-                <div style={{
-                  background: 'rgba(212,43,43,0.1)',
-                  border: '1px solid rgba(212,43,43,0.35)',
-                  color: '#FF7070',
-                  fontSize: '0.825rem', fontWeight: 500,
-                  padding: '0.875rem 1rem', borderRadius: 10, marginBottom: '1.5rem',
-                  display: 'flex', alignItems: 'center', gap: 8,
-                }}>
-                  <i className="fas fa-exclamation-circle"></i>
-                  {error}
+              {/* Maintenance Notice */}
+              <div style={{ background: 'rgba(245,130,32,0.08)', border: '1px solid rgba(245,130,32,0.2)', borderRadius: 12, padding: '0.85rem 1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <i className="fas fa-tools" style={{ color: '#f58220', fontSize: '0.85rem', marginTop: 2, flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#f58220', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Authentication Temporarily Offline</div>
+                  <div style={{ fontSize: '0.75rem', color: '#777', lineHeight: 1.5 }}>Login is disabled during this phase. Please contact us via WhatsApp for support.</div>
                 </div>
-              )}
+              </div>
 
-              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <form style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 {/* Email */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 700, fontFamily: 'Rajdhani, sans-serif', color: '#9898A8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 8 }}>
-                    Email Address
-                  </label>
+                  <label style={{ display: 'block', fontSize: '0.62rem', fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 7 }}>Email Address</label>
                   <div style={{ position: 'relative' }}>
-                    <i className="fas fa-envelope" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#505060', fontSize: '0.8rem' }}></i>
+                    <i className="fas fa-envelope" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#444', fontSize: '0.8rem' }} />
                     <input
                       type="email"
                       placeholder="you@example.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
-                      required
-                      style={{ ...inputStyle, paddingLeft: '2.5rem' }}
-                      onFocus={e => { e.target.style.borderColor = '#D42B2B'; e.target.style.boxShadow = '0 0 0 2px rgba(212,43,43,0.2)'; }}
-                      onBlur={e => { e.target.style.borderColor = '#2A2A30'; e.target.style.boxShadow = 'none'; }}
+                      disabled
+                      style={{ width: '100%', background: '#0a0a0c', border: '1px solid #222', color: '#555', borderRadius: 12, padding: '0.85rem 1rem 0.85rem 2.6rem', fontSize: '0.875rem', outline: 'none', fontFamily: 'Inter, sans-serif', cursor: 'not-allowed', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: '0.65rem', fontWeight: 700, fontFamily: 'Rajdhani, sans-serif', color: '#9898A8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
-                      Password
-                    </label>
-                    <a href="#" style={{ fontSize: '0.75rem', color: '#D42B2B', fontWeight: 600, textDecoration: 'none', transition: 'color 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#FF3030'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#D42B2B'}
-                    >
-                      Forgot Password?
-                    </a>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+                    <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Password</label>
+                    <span style={{ fontSize: '0.72rem', color: '#444', fontWeight: 600 }}>Forgot Password?</span>
                   </div>
                   <div style={{ position: 'relative' }}>
-                    <i className="fas fa-lock" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#505060', fontSize: '0.8rem' }}></i>
+                    <i className="fas fa-lock" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#444', fontSize: '0.8rem' }} />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
-                      required
-                      style={{ ...inputStyle, paddingLeft: '2.5rem', paddingRight: '3rem' }}
-                      onFocus={e => { e.target.style.borderColor = '#D42B2B'; e.target.style.boxShadow = '0 0 0 2px rgba(212,43,43,0.2)'; }}
-                      onBlur={e => { e.target.style.borderColor = '#2A2A30'; e.target.style.boxShadow = 'none'; }}
+                      disabled
+                      style={{ width: '100%', background: '#0a0a0c', border: '1px solid #222', color: '#555', borderRadius: 12, padding: '0.85rem 3rem 0.85rem 2.6rem', fontSize: '0.875rem', outline: 'none', fontFamily: 'Inter, sans-serif', cursor: 'not-allowed', boxSizing: 'border-box' }}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(v => !v)}
-                      style={{
-                        position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        color: '#505060', transition: 'color 0.2s', display: 'flex', alignItems: 'center',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#C8C8D4'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#505060'}
-                    >
+                    <button type="button" onClick={() => setShowPassword(v => !v)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#444', display: 'flex', alignItems: 'center' }}>
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
 
-                {/* Submit */}
+                {/* Submit — Disabled */}
                 <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    background: loading ? '#2A2A30' : 'linear-gradient(135deg,#D42B2B,#A01E1E)',
-                    color: loading ? '#505060' : '#fff',
-                    fontFamily: 'Rajdhani, sans-serif',
-                    fontSize: '0.875rem', fontWeight: 800,
-                    letterSpacing: '0.15em', textTransform: 'uppercase',
-                    padding: '1rem', borderRadius: 12, border: 'none',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                    boxShadow: loading ? 'none' : '0 8px 24px rgba(212,43,43,0.35)',
-                    transition: 'all 0.25s ease',
-                    marginTop: 4,
-                  }}
-                  onMouseEnter={e => { if (!loading) { e.currentTarget.style.boxShadow = '0 12px 32px rgba(212,43,43,0.5)'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = loading ? 'none' : '0 8px 24px rgba(212,43,43,0.35)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  type="button"
+                  disabled
+                  style={{ width: '100%', background: '#111', border: '1px solid #222', color: '#444', fontFamily: 'Space Grotesk, sans-serif', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.95rem', borderRadius: 12, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 4 }}
                 >
-                  {loading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i> Signing In...
-                    </>
-                  ) : (
-                    <>
-                      <LogIn size={16} /> Sign In to Account
-                    </>
-                  )}
+                  <LogIn size={15} /> Login Temporarily Disabled
                 </button>
               </form>
 
-              <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #2A2A30', textAlign: 'center' }}>
-                <p style={{ color: '#707080', fontSize: '0.875rem' }}>
+              {/* Footer links */}
+              <div style={{ marginTop: '1.75rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                <p style={{ color: '#555', fontSize: '0.82rem' }}>
                   Don't have an account?{' '}
-                  <Link to="/register" style={{ color: '#D42B2B', fontWeight: 700, textDecoration: 'none', transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#FF3030'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#D42B2B'}
-                  >
+                  <Link to="/register" style={{ color: '#f58220', fontWeight: 700, textDecoration: 'none' }}>
                     Create Account
                   </Link>
                 </p>
@@ -255,14 +120,13 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Trust Badges */}
-          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: '#505060' }}>
-              <i className="fas fa-lock" style={{ color: '#D42B2B' }}></i> Secure Login
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: '#505060' }}>
-              <i className="fas fa-shield-alt" style={{ color: '#9898A8' }}></i> 100% Safe
-            </span>
+          {/* Trust badge */}
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+            {[{ icon: 'fa-shield-alt', text: 'Secure Login' }, { icon: 'fa-lock', text: 'SSL Encrypted' }].map(b => (
+              <div key={b.icon} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.65rem', color: '#444', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <i className={`fas ${b.icon}`} style={{ color: '#f58220' }} />{b.text}
+              </div>
+            ))}
           </div>
         </div>
       </div>

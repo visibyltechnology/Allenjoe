@@ -21,7 +21,7 @@ import {
 } from '../utils/notificationService';
 
 // ── Klump BNPL
-const KLUMP_PUBLIC_KEY = 'klp_pk_7e4780b45f194d81902b42f4ed2031f6b219fe82ec42464db113beea89c94967';
+const KLUMP_PUBLIC_KEY = 'klp_pk_test_5695101996134cf198d9241433a1a9e0b219fe82ec42464db113beea89c94967';
 let klumpScriptPromise = null;
 function loadKlumpScript() {
   if (klumpScriptPromise) return klumpScriptPromise;
@@ -43,9 +43,10 @@ function getKlump() {
 
 // ── Bank account details
 const BANK_ACCOUNT = {
-  bank: 'Premium Trust Bank',
-  name: 'Neo Tech Gadget',
-  number: '0040250513',
+  bank: 'Bank Transfer',
+  name: 'Allenjoe',
+  number1: '2694853628',
+  number2: '0050195383',
 };
 
 
@@ -83,6 +84,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) return;
+      if (!db) return;
       try {
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
@@ -271,14 +273,17 @@ export default function Cart() {
       // Validate & refresh prices
       for (const item of items) {
         try {
-          const productDoc = await getDoc(doc(db, 'products', item.id));
-          if (!productDoc.exists()) {
-             const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
-             if (!demoProd) throw new Error(`Product ${item.name} no longer exists.`);
-             item.price = demoProd.price;
+          if (db) {
+            const productDoc = await getDoc(doc(db, 'products', item.id));
+            if (productDoc.exists()) {
+              item.price = productDoc.data().price;
+            } else {
+              const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
+              if (demoProd) item.price = demoProd.price;
+            }
           } else {
-             const dbProduct = productDoc.data();
-             item.price = dbProduct.price;
+            const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
+            if (demoProd) item.price = demoProd.price;
           }
         } catch (e) {
           const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
@@ -313,6 +318,12 @@ export default function Cart() {
       for (const item of items) {
         try { await decreaseInventory(item.id, Number(item.quantity)); }
         catch (e) { console.error('Inventory error:', e); }
+      }
+
+      if (!db) {
+        toast.error('Database unavailable. Cannot place order at this time.');
+        setLoading(false);
+        return;
       }
 
       const orderRef = await addDoc(collection(db, 'orders'), initializeOrderTracking({
@@ -369,8 +380,8 @@ export default function Cart() {
 
   const inputStyle = {
     width: '100%',
-    background: '#1E1E22',
-    border: '1px solid #2A2A30',
+    background: '#0a0a0c',
+    border: '1px solid #1e1e20',
     color: '#E8E8F0',
     borderRadius: 8,
     padding: '0.75rem 1rem',
@@ -382,12 +393,12 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506' }}>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
-          <ShoppingBag size={64} style={{ color: '#2A2A30', marginBottom: '1.5rem' }} />
+          <ShoppingBag size={64} style={{ color: '#1e1e20', marginBottom: '1.5rem' }} />
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', fontFamily: 'Rajdhani, sans-serif' }}>Your Bag is Empty</h1>
           <p style={{ color: '#707080', fontSize: '0.85rem', marginBottom: '2rem' }}>Looks like you haven't added anything yet.</p>
-          <Link to="/products" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#D42B2B,#A01E1E)', color: '#fff', fontWeight: 800, padding: '1rem 2rem', borderRadius: 12, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', boxShadow: '0 8px 24px rgba(212,43,43,0.3)', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(212,43,43,0.45)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,43,43,0.3)'; }}>
+          <Link to="/products" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#f58220,#c46516)', color: '#fff', fontWeight: 800, padding: '1rem 2rem', borderRadius: 12, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', boxShadow: '0 8px 24px rgba(245,130,32,0.3)', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(245,130,32,0.45)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,130,32,0.3)'; }}>
             Start Shopping
           </Link>
         </div>
@@ -397,8 +408,8 @@ export default function Cart() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#0E0E10' }}>
-      <div className="px-4 sm:px-6" style={{ maxWidth: '80rem', margin: '0 auto', paddingBottom: '2rem', paddingTop: '2rem', width: '100%', flex: 1 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#050506' }}>
+      <div className="px-4 sm:px-6" style={{ maxWidth: '80rem', margin: '0 auto', paddingBottom: '2rem', paddingTop: '110px', width: '100%', flex: 1 }}>
         <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '0.75rem', fontWeight: 700, color: '#707080', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', transition: 'color 0.2s', marginBottom: '2rem' }} onMouseEnter={e => e.currentTarget.style.color = '#E8E8F0'} onMouseLeave={e => e.currentTarget.style.color = '#707080'}>
           <ArrowLeft size={16} /> Continue Shopping
         </Link>
@@ -406,7 +417,7 @@ export default function Cart() {
         <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.5rem)', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2rem', fontFamily: 'Rajdhani, sans-serif' }}>Shopping Bag</h1>
 
         {error && (
-          <div style={{ background: 'rgba(212,43,43,0.1)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF7070', padding: '1rem', borderRadius: 12, fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, marginBottom: '2rem' }}>
+          <div style={{ background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.3)', color: '#f59e0b', padding: '1rem', borderRadius: 12, fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, marginBottom: '2rem' }}>
             <i className="fas fa-exclamation-circle"></i> {error}
           </div>
         )}
@@ -416,8 +427,8 @@ export default function Cart() {
           {/* Items List */}
           <div style={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {items.map((item) => (
-              <div key={item.cartItemId} style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 20, padding: '1.25rem', display: 'flex', gap: '1.25rem', position: 'relative' }}>
-                <div style={{ width: 100, height: 100, background: 'linear-gradient(145deg,#1E1E22,#161618)', border: '1px solid #2A2A30', borderRadius: 12, display: 'flex', alignItems: 'center', justifyItems: 'center', padding: '0.5rem', flexShrink: 0 }}>
+              <div key={item.cartItemId} style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 20, padding: '1.25rem', display: 'flex', gap: '1.25rem', position: 'relative' }}>
+                <div style={{ width: 100, height: 100, background: 'linear-gradient(145deg,#0a0a0c,#0a0a0c)', border: '1px solid #1e1e20', borderRadius: 12, display: 'flex', alignItems: 'center', justifyItems: 'center', padding: '0.5rem', flexShrink: 0 }}>
                   <img src={item.img} alt={item.name} loading="lazy" decoding="async" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                 </div>
 
@@ -432,7 +443,7 @@ export default function Cart() {
                     <button 
                       onClick={() => removeFromCart(item.cartItemId)}
                       style={{ background: 'none', border: 'none', color: '#505060', cursor: 'pointer', padding: 4, transition: 'color 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#D42B2B'}
+                      onMouseEnter={e => e.currentTarget.style.color = '#f58220'}
                       onMouseLeave={e => e.currentTarget.style.color = '#505060'}
                     >
                       <Trash2 size={18} />
@@ -443,25 +454,25 @@ export default function Cart() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {item.paymentChoice === 'installment' ? (
                         items.filter(i => i.paymentChoice === 'installment').length > 1 ? (
-                          <div style={{ background: 'rgba(212,43,43,0.1)', border: '1px solid rgba(212,43,43,0.25)', color: '#FF7070', fontSize: '0.65rem', fontWeight: 600, padding: '0.5rem', borderRadius: 8, maxWidth: 240, lineHeight: 1.4 }}>
+                          <div style={{ background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.25)', color: '#f59e0b', fontSize: '0.65rem', fontWeight: 600, padding: '0.5rem', borderRadius: 8, maxWidth: 240, lineHeight: 1.4 }}>
                             <strong style={{ display: 'block', marginBottom: 2, color: '#E8E8F0' }}><i className="fas fa-info-circle mr-1"></i> Multiple Installment Items</strong>
                             Payments will be combined into a single schedule during order review.
                           </div>
                         ) : (
-                          <span style={{ display: 'inline-block', background: 'rgba(212,43,43,0.15)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF7070', fontSize: '0.65rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.15em', width: 'max-content' }}>
+                          <span style={{ display: 'inline-block', background: 'rgba(245,130,32,0.15)', border: '1px solid rgba(245,130,32,0.3)', color: '#f59e0b', fontSize: '0.65rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.15em', width: 'max-content' }}>
                             {item.paymentFrequency === 'weekly' ? item.installments + ' Weekly Payments' : item.installments + ' Monthly Payments'}
                           </span>
                         )
                       ) : (
-                        <span style={{ display: 'inline-block', background: '#1E1E22', border: '1px solid #2A2A30', color: '#9898A8', fontSize: '0.65rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.15em', width: 'max-content' }}>
+                        <span style={{ display: 'inline-block', background: '#0a0a0c', border: '1px solid #1e1e20', color: '#9898A8', fontSize: '0.65rem', fontWeight: 800, padding: '4px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.15em', width: 'max-content' }}>
                           Full Payment
                         </span>
                       )}
                       
-                      <div style={{ display: 'flex', alignItems: 'center', background: '#1E1E22', border: '1px solid #2A2A30', borderRadius: 8, overflow: 'hidden', width: 'max-content' }}>
-                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)} style={{ background: 'transparent', border: 'none', color: '#9898A8', padding: '6px 12px', cursor: 'pointer', fontWeight: 800, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#2A2A30'; e.currentTarget.style.color = '#E8E8F0'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9898A8'; }}>-</button>
-                        <span style={{ padding: '6px 12px', fontSize: '0.85rem', fontWeight: 800, color: '#E8E8F0', borderLeft: '1px solid #2A2A30', borderRight: '1px solid #2A2A30', minWidth: 40, textAlign: 'center' }}>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)} style={{ background: 'transparent', border: 'none', color: '#9898A8', padding: '6px 12px', cursor: 'pointer', fontWeight: 800, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#2A2A30'; e.currentTarget.style.color = '#E8E8F0'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9898A8'; }}>+</button>
+                      <div style={{ display: 'flex', alignItems: 'center', background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 8, overflow: 'hidden', width: 'max-content' }}>
+                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)} style={{ background: 'transparent', border: 'none', color: '#9898A8', padding: '6px 12px', cursor: 'pointer', fontWeight: 800, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#1e1e20'; e.currentTarget.style.color = '#E8E8F0'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9898A8'; }}>-</button>
+                        <span style={{ padding: '6px 12px', fontSize: '0.85rem', fontWeight: 800, color: '#E8E8F0', borderLeft: '1px solid #1e1e20', borderRight: '1px solid #1e1e20', minWidth: 40, textAlign: 'center' }}>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)} style={{ background: 'transparent', border: 'none', color: '#9898A8', padding: '6px 12px', cursor: 'pointer', fontWeight: 800, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#1e1e20'; e.currentTarget.style.color = '#E8E8F0'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#9898A8'; }}>+</button>
                       </div>
                     </div>
 
@@ -483,9 +494,9 @@ export default function Cart() {
 
           {/* Checkout Summary Sidebar */}
           <div style={{ width: '100%', flex: '1 1 340px', maxWidth: 420 }}>
-            <div style={{ background: 'linear-gradient(135deg, #1A1A1E, #161618)', border: '1px solid #2A2A30', borderRadius: 24, padding: '2rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', position: 'sticky', top: 32 }}>
+            <div style={{ background: 'linear-gradient(135deg, #1A1A1E, #0a0a0c)', border: '1px solid #1e1e20', borderRadius: 24, padding: '2rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', position: 'sticky', top: 32 }}>
               
-              <h2 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D42B2B', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #2A2A30' }}>Delivery Information</h2>
+              <h2 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f58220', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #1e1e20' }}>Delivery Information</h2>
 
               {/* Saved Addresses */}
               {savedAddresses.length > 0 && (
@@ -514,28 +525,28 @@ export default function Cart() {
               )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.5rem' }}>
-                <input type="text" placeholder="Full Address *" value={deliveryInfo.address} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, address: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'} />
+                <input type="text" placeholder="Full Address *" value={deliveryInfo.address} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, address: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'} />
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <input type="text" value="Nigeria" disabled style={{ ...inputStyle, width: '33%', background: '#161618', color: '#505060', cursor: 'not-allowed' }} />
-                  <select value={deliveryInfo.state} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, state: e.target.value, city: '' }); setSelectedAddressIndex(-1); }} style={{ ...inputStyle, width: '67%', cursor: 'pointer' }} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'}>
+                  <input type="text" value="Nigeria" disabled style={{ ...inputStyle, width: '33%', background: '#0a0a0c', color: '#505060', cursor: 'not-allowed' }} />
+                  <select value={deliveryInfo.state} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, state: e.target.value, city: '' }); setSelectedAddressIndex(-1); }} style={{ ...inputStyle, width: '67%', cursor: 'pointer' }} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'}>
                     <option value="">Select State *</option>
                     {(nigeriaData || []).map(s => <option key={s.state} value={s.state}>{s.state}</option>)}
                   </select>
                 </div>
                 <div>
-                  <input type="text" list="lga-list" placeholder="LGA / City *" value={deliveryInfo.city} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, city: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'} />
+                  <input type="text" list="lga-list" placeholder="LGA / City *" value={deliveryInfo.city} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, city: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'} />
                   <datalist id="lga-list">
                     {((nigeriaData || []).find(s => s.state === deliveryInfo.state)?.lgas || []).map(lga => (
                       <option key={lga.name} value={lga.name} />
                     ))}
                   </datalist>
                 </div>
-                <input type="text" placeholder="Landmark (Optional)" value={deliveryInfo.landmark || ''} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, landmark: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'} />
+                <input type="text" placeholder="Landmark (Optional)" value={deliveryInfo.landmark || ''} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, landmark: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'} />
                 <div>
-                  <input type="tel" placeholder="WhatsApp Number (+234...) *" value={deliveryInfo.phone} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, phone: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'} />
+                  <input type="tel" placeholder="WhatsApp Number (+234...) *" value={deliveryInfo.phone} onChange={(e) => { setDeliveryInfo({ ...deliveryInfo, phone: e.target.value }); setSelectedAddressIndex(-1); }} style={inputStyle} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'} />
                   <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#505060', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 4, display: 'block' }}>Required for WhatsApp updates. Include country code (+234).</span>
                 </div>
-                <textarea placeholder="Additional Instructions (Optional)" value={deliveryInfo.instructions} onChange={(e) => setDeliveryInfo({ ...deliveryInfo, instructions: e.target.value })} style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} onFocus={e => e.target.style.borderColor = '#D42B2B'} onBlur={e => e.target.style.borderColor = '#2A2A30'}></textarea>
+                <textarea placeholder="Additional Instructions (Optional)" value={deliveryInfo.instructions} onChange={(e) => setDeliveryInfo({ ...deliveryInfo, instructions: e.target.value })} style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} onFocus={e => e.target.style.borderColor = '#f58220'} onBlur={e => e.target.style.borderColor = '#1e1e20'}></textarea>
               </div>
 
               {selectedAddressIndex === -1 && savedAddresses.length < 3 && (
@@ -545,7 +556,7 @@ export default function Cart() {
                 </div>
               )}
 
-              <h2 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D42B2B', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #2A2A30', marginTop: '2rem' }}>Order Summary</h2>
+              <h2 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f58220', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #1e1e20', marginTop: '2rem' }}>Order Summary</h2>
               
               {(() => {
                 return (
@@ -558,9 +569,9 @@ export default function Cart() {
                       <span>Delivery</span>
                       <span style={{ color: '#4ade80', fontWeight: 800 }}>FREE</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid #2A2A30', paddingTop: 16, marginBottom: 24, background: '#161618', padding: '1rem', borderRadius: 12, border: '1px solid #2A2A30' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid #1e1e20', paddingTop: 16, marginBottom: 24, background: '#0a0a0c', padding: '1rem', borderRadius: 12, border: '1px solid #1e1e20' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#C8C8D4', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Total Due Today</span>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#D42B2B', letterSpacing: '0.02em', fontFamily: 'Rajdhani, sans-serif' }}>{fmt(totalToPayNow)}</span>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f58220', letterSpacing: '0.02em', fontFamily: 'Rajdhani, sans-serif' }}>{fmt(totalToPayNow)}</span>
                     </div>
                   </>
                 );
@@ -618,10 +629,10 @@ export default function Cart() {
                 }}
                 disabled={loading}
                 style={{
-                  width: '100%', background: 'linear-gradient(135deg,#D42B2B,#A01E1E)', color: '#fff', border: 'none', padding: '1rem', borderRadius: 12, fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', transition: 'all 0.25s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, boxShadow: '0 8px 24px rgba(212,43,43,0.3)', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, fontFamily: 'Rajdhani, sans-serif'
+                  width: '100%', background: 'linear-gradient(135deg,#f58220,#c46516)', color: '#fff', border: 'none', padding: '1rem', borderRadius: 12, fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', transition: 'all 0.25s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, boxShadow: '0 8px 24px rgba(245,130,32,0.3)', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, fontFamily: 'Rajdhani, sans-serif'
                 }}
-                onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(212,43,43,0.45)'; } }}
-                onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,43,43,0.3)'; } }}
+                onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(245,130,32,0.45)'; } }}
+                onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,130,32,0.3)'; } }}
               >
                 {loading ? <><i className="fas fa-spinner fa-spin"></i> Please wait...</> : 'Review & Confirm Order'}
               </button>
@@ -664,12 +675,12 @@ export default function Cart() {
       {/* Confirm Order Modal */}
       {showPreview && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: '#161618', border: '1px solid #2A2A30', borderRadius: 24, width: '100%', maxWidth: 600, maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
+          <div style={{ background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 24, width: '100%', maxWidth: 600, maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
 
             {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg,#1E1E22,#161618)', borderBottom: '1px solid #2A2A30', padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+            <div style={{ background: 'linear-gradient(135deg,#0a0a0c,#0a0a0c)', borderBottom: '1px solid #1e1e20', padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
               <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#E8E8F0', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'Rajdhani, sans-serif', margin: 0 }}>Confirm &amp; Pay</h2>
-              <button onClick={() => { setShowPreview(false); setError(''); }} style={{ background: 'none', border: 'none', color: '#707080', cursor: 'pointer', fontSize: '1.25rem' }} onMouseEnter={e => e.currentTarget.style.color = '#D42B2B'} onMouseLeave={e => e.currentTarget.style.color = '#707080'}>
+              <button onClick={() => { setShowPreview(false); setError(''); }} style={{ background: 'none', border: 'none', color: '#707080', cursor: 'pointer', fontSize: '1.25rem' }} onMouseEnter={e => e.currentTarget.style.color = '#f58220'} onMouseLeave={e => e.currentTarget.style.color = '#707080'}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -686,16 +697,16 @@ export default function Cart() {
                     ...(isAdmin ? [{ id: 'admin_cash', label: 'Admin POS / Cash', icon: Zap, desc: 'Direct order placement (Admin only)' }] : []),
                   ].map(m => (
                     <div key={m.id} onClick={() => { setPayMethod(m.id); setError(''); }}
-                      style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', border: `2px solid ${payMethod === m.id ? '#D42B2B' : '#2A2A30'}`, borderRadius: 12, cursor: 'pointer', background: payMethod === m.id ? 'rgba(212,43,43,0.07)' : '#1E1E22', transition: 'all 0.2s' }}>
-                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(212,43,43,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <m.icon size={18} color="#D42B2B" />
+                      style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', border: `2px solid ${payMethod === m.id ? '#f58220' : '#1e1e20'}`, borderRadius: 12, cursor: 'pointer', background: payMethod === m.id ? 'rgba(245,130,32,0.07)' : '#0a0a0c', transition: 'all 0.2s' }}>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(245,130,32,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <m.icon size={18} color="#f58220" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#E8E8F0' }}>{m.label}</div>
                         <div style={{ fontSize: '0.7rem', color: '#707080' }}>{m.desc}</div>
                       </div>
-                      <div style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${payMethod === m.id ? '#D42B2B' : '#505060'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {payMethod === m.id && <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#D42B2B' }}></div>}
+                      <div style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${payMethod === m.id ? '#f58220' : '#505060'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {payMethod === m.id && <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#f58220' }}></div>}
                       </div>
                     </div>
                   ))}
@@ -704,8 +715,8 @@ export default function Cart() {
 
               {/* Bank Transfer Details */}
               {payMethod === 'bank_transfer' && (
-                <div style={{ background: '#0E0E10', border: '1px solid #D42B2B', borderRadius: 14, padding: '1.25rem' }}>
-                  <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D42B2B', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ background: '#050506', border: '1px solid #f58220', borderRadius: 14, padding: '1.25rem' }}>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f58220', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <CreditCard size={14} /> Account Details
                   </h4>
                   <div style={{ display: 'grid', gap: 10, marginBottom: 16 }}>
@@ -716,16 +727,20 @@ export default function Cart() {
                       </div>
                     ))}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#707080' }}>Account No.</span>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#D42B2B', fontFamily: 'monospace', letterSpacing: '3px' }}>{BANK_ACCOUNT.number}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#707080' }}>Account No. 1</span>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f58220', fontFamily: 'monospace', letterSpacing: '3px' }}>{BANK_ACCOUNT.number1}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#707080' }}>Account No. 2</span>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f58220', fontFamily: 'monospace', letterSpacing: '3px' }}>{BANK_ACCOUNT.number2}</span>
                     </div>
                   </div>
                   <p style={{ fontSize: '0.7rem', color: '#9898A8', marginBottom: 12 }}>Transfer exactly <strong style={{ color: '#E8E8F0' }}>{fmt(totalToPayNow + (deliveryInfo.state ? getDeliveryDetails(deliveryInfo.state).price : 0))}</strong> and upload your receipt below.</p>
-                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: '#1E1E22', border: `2px dashed ${receiptFile ? '#D42B2B' : '#2A2A30'}`, borderRadius: 10, padding: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: '#0a0a0c', border: `2px dashed ${receiptFile ? '#f58220' : '#1e1e20'}`, borderRadius: 10, padding: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                     {receiptPreview ? (
-                      <img src={receiptPreview} alt="Receipt" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, border: '1px solid #D42B2B' }} />
+                      <img src={receiptPreview} alt="Receipt" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, border: '1px solid #f58220' }} />
                     ) : (
-                      <Upload size={24} color="#D42B2B" />
+                      <Upload size={24} color="#f58220" />
                     )}
                     <span style={{ fontSize: '0.7rem', fontWeight: 700, color: receiptFile ? '#4ADE80' : '#707080', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {receiptFile ? `âœ“ ${receiptFile.name}` : 'Click to upload receipt *'}
@@ -737,14 +752,14 @@ export default function Cart() {
 
               {/* Klump Info */}
               {payMethod === 'klump_bnpl' && (
-                <div style={{ background: '#0E0E10', border: '1px solid #2A2A30', borderRadius: 14, padding: '1.25rem' }}>
-                  <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D42B2B', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ background: '#050506', border: '1px solid #1e1e20', borderRadius: 14, padding: '1.25rem' }}>
+                  <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f58220', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <ShieldCheck size={14} /> Buy Now, Pay Later with Klump
                   </h4>
                   <p style={{ fontSize: '0.75rem', color: '#9898A8', lineHeight: 1.6 }}>Pay for your order in easy installments. Klump handles the repayment schedule and your order ships immediately after approval.</p>
-                  <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', background: '#1E1E22', borderRadius: 10, padding: '12px 16px', border: '1px solid #2A2A30' }}>
+                  <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', background: '#0a0a0c', borderRadius: 10, padding: '12px 16px', border: '1px solid #1e1e20' }}>
                     <span style={{ fontSize: '0.75rem', color: '#707080' }}>Order Total</span>
-                    <span style={{ fontWeight: 800, color: '#D42B2B', fontSize: '1rem', fontFamily: 'Rajdhani, sans-serif' }}>{fmt(totalToPayNow + (deliveryInfo.state ? getDeliveryDetails(deliveryInfo.state).price : 0))}</span>
+                    <span style={{ fontWeight: 800, color: '#f58220', fontSize: '1rem', fontFamily: 'Rajdhani, sans-serif' }}>{fmt(totalToPayNow + (deliveryInfo.state ? getDeliveryDetails(deliveryInfo.state).price : 0))}</span>
                   </div>
                 </div>
               )}
@@ -752,11 +767,11 @@ export default function Cart() {
               {/* Items Summary */}
               <div>
                 <h3 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#707080', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <i className="fas fa-box" style={{ color: '#D42B2B' }}></i> Order Items
+                  <i className="fas fa-box" style={{ color: '#f58220' }}></i> Order Items
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {items.map(item => (
-                    <div key={item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: '#1E1E22', border: '1px solid #2A2A30', borderRadius: 8 }}>
+                    <div key={item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: '#0a0a0c', border: '1px solid #1e1e20', borderRadius: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#707080' }}>{item.quantity}Ã—</span>
                         <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#E8E8F0' }}>{item.name}</span>
@@ -772,18 +787,18 @@ export default function Cart() {
 
               {/* Error */}
               {error && (
-                <div style={{ background: 'rgba(212,43,43,0.1)', border: '1px solid rgba(212,43,43,0.3)', color: '#FF7070', padding: '0.75rem', borderRadius: 8, fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.3)', color: '#f59e0b', padding: '0.75rem', borderRadius: 8, fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <i className="fas fa-exclamation-circle"></i> {error}
                 </div>
               )}
 
               {/* Actions */}
               <div style={{ display: 'flex', gap: 12 }}>
-                <button onClick={() => { setShowPreview(false); setError(''); }} style={{ flex: 1, background: '#1E1E22', border: '1px solid #2A2A30', color: '#C8C8D4', fontWeight: 800, padding: '1rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={() => { setShowPreview(false); setError(''); }} style={{ flex: 1, background: '#0a0a0c', border: '1px solid #1e1e20', color: '#C8C8D4', fontWeight: 800, padding: '1rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer' }}>Cancel</button>
                 <button
                   onClick={handleCheckout}
                   disabled={loading}
-                  style={{ flex: 2, background: 'linear-gradient(135deg,#D42B2B,#A01E1E)', color: '#fff', border: 'none', fontWeight: 800, padding: '1rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  style={{ flex: 2, background: 'linear-gradient(135deg,#f58220,#c46516)', color: '#fff', border: 'none', fontWeight: 800, padding: '1rem', borderRadius: 12, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                 >
                   {loading
                     ? <><i className="fas fa-spinner fa-spin"></i> Processing...</>
