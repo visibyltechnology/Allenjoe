@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png?v=5" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALLENJOE | Advanced Solar Inverter & CCTV Automation</title>
+    <meta name="description" content="Allenjoe — Professional Solar Inverters and CCTV Automation. Nationwide delivery and advanced tech solutions.">
+    <meta name="theme-color" content="#f58220">
+    <!-- Google Fonts: Space Grotesk (tech) + Montserrat (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      :root {
+        --bg-base: #050505;
+        --bg-surface: #0a0a0a;
+        --primary: #f58220;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 10px; }
+      ::-webkit-scrollbar-track { background: var(--bg-base); }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+      /* Smooth transition base */
+      .transition-all-300 { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+  </head>
+  <body class="bg-[#050505] text-gray-200 font-sans overflow-x-hidden w-full">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

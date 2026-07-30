@@ -1,0 +1,5 @@
+generate title logo and description should be circular
+
+home product button not responding, some have wrong function
+
+full product information listing page not responding
