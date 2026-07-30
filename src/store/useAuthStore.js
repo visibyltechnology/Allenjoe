@@ -7,6 +7,12 @@ const useAuthStore = create((set) => ({
   isAdmin: false,
   loading: true,
   init: () => {
+    if (!auth) {
+      console.warn("Firebase Auth is disabled/stubbed. Running offline mode.");
+      set({ user: null, isAdmin: false, loading: false });
+      return;
+    }
+    
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         // Logged out — resolve immediately

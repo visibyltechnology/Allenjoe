@@ -41,6 +41,28 @@ const HERO_SLIDES = [
         title3: ' SOLUTIONS',
         desc: 'Uninterruptible power supply with rapid millisecond grid-fail switchover. Store excess solar yield in scalable lithium banks for absolute grid independence.',
         bg: '/images/hybrid_inverter.png'
+    },
+    {
+        id: 4,
+        badge: 'SOLAR ARRAYS • MAX YIELD',
+        title1: 'HIGH-EFFICIENCY ',
+        titleGradient1: 'SOLAR',
+        title2: ' & \n',
+        titleGradient2: 'PANELS',
+        title3: ' ARRAY',
+        desc: 'Maximize your energy yield with Tier 1 monocrystalline bi-facial solar panels. Engineered for extreme weather and decades of clean power generation.',
+        bg: '/images/hero_solar_array_1785368220386.png'
+    },
+    {
+        id: 5,
+        badge: 'AUTOMATION • SMART CONTROL',
+        title1: 'CENTRALIZED ',
+        titleGradient1: 'LOGIC',
+        title2: ' & \n',
+        titleGradient2: 'CONTROL',
+        title3: ' HUB',
+        desc: 'Bring your entire home or facility under one intelligent dashboard. Monitor energy usage, control security feeds, and automate your lifestyle.',
+        bg: '/images/logic_engine_1785370644286.png'
     }
 ];
 
@@ -52,6 +74,14 @@ export default function Home() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [bestSelling, setBestSelling] = useState([]);
     const [featLoading, setFeatLoading] = useState(true);
+
+    // Auto-rotate Hero Carousel
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+        }, 6000);
+        return () => clearInterval(timer);
+    }, []);
 
     // Data Fetching (fallback for now since categories changed)
     useEffect(() => {
@@ -98,8 +128,8 @@ export default function Home() {
                             className="hero-slide-bg"
                             style={{
                                 position: 'absolute', inset: 0,
-                                background: `url(${slide.bg}) center/cover no-repeat`,
-                                opacity: index === currentSlide ? 0.35 : 0,
+                                background: `url('${slide.bg}') center/cover no-repeat`,
+                                opacity: index === currentSlide ? 0.6 : 0,
                                 transform: index === currentSlide ? 'scale(1)' : 'scale(1.05)',
                                 transition: 'opacity 1s ease-in-out, transform 3s ease-out',
                                 zIndex: 0

@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import { listenToCategories, DEFAULT_CATEGORIES } from '../utils/categoryService';
 import { listenToBrands, DEFAULT_BRANDS } from '../utils/brandService';
 import { ProductCard, SkeletonCard } from '../components/ProductCard';
+import { DEMO_PRODUCTS } from '../utils/demoProducts';
 
 // Map URL paths to categories
 function pathToCategory(pathname) {
@@ -16,126 +17,7 @@ function pathToCategory(pathname) {
     return null;
 }
 
-// Fallback product data for demo/no-firebase state
-const DEMO_PRODUCTS = [
-    {
-        id: 'd1', name: 'Pro Hybrid Inverter X1 10kW', price: 850000, category: 'Inverters',
-        brand: 'Deye', inventory_status: 'in_stock', items_left: 5, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.9, reviewCount: 124,
-        img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
-        description: 'Seamless grid-tie and off-grid hybrid inverter with 48V battery support and 3-phase output.',
-        tag: 'best-seller',
-    },
-    {
-        id: 'd2', name: 'Monocrystalline Solar Panel 550W', price: 180000, category: 'Solar Panels',
-        brand: 'Jinko', inventory_status: 'in_stock', items_left: 50, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.8, reviewCount: 89,
-        img: '/images/solar_panel.png',
-        description: 'Tier 1 monocrystalline solar panel with 21.5% efficiency and 25-year performance warranty.',
-    },
-    {
-        id: 'd3', name: '4K AI PTZ Security Camera', price: 95000, category: 'CCTV',
-        brand: 'Hikvision', inventory_status: 'in_stock', items_left: 20, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.7, reviewCount: 42,
-        img: '/images/hero_cctv.png',
-        description: '360° PTZ dome camera with color night vision, PoE support, and AI motion tracking.',
-        tag: 'new',
-    },
-    {
-        id: 'd4', name: 'LiFePO4 Battery 200Ah 48V', price: 620000, category: 'Batteries',
-        brand: 'Pylontech', inventory_status: 'in_stock', items_left: 8, unlimited_stock: false,
-        is_hidden: false, averageRating: 5, reviewCount: 67,
-        img: '/images/battery.png',
-        description: 'Stackable lithium iron phosphate battery with 10-year cycle warranty and BMS protection.',
-    },
-    {
-        id: 'd5', name: 'Growatt 5kW MPPT Inverter', price: 480000, category: 'Inverters',
-        brand: 'Growatt', inventory_status: 'in_stock', items_left: 12, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.6, reviewCount: 55,
-        img: '/images/hybrid_inverter.png',
-        description: 'Single-phase solar inverter with built-in MPPT charger and WiFi monitoring.',
-    },
-    {
-        id: 'd6', name: '16-Channel NVR Security Kit', price: 320000, category: 'CCTV',
-        brand: 'Dahua', inventory_status: 'in_stock', items_left: 6, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.5, reviewCount: 38,
-        img: '/images/control_room.png',
-        description: '16-channel network video recorder with 4TB HDD, remote viewing, and AI analytics.',
-    },
-    {
-        id: 'd7', name: '400W Flexible Solar Panel', price: 95000, category: 'Solar Panels',
-        brand: 'Canadian Solar', inventory_status: 'in_stock', items_left: 30, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.7, reviewCount: 28,
-        img: '/images/solar_panel.png',
-        description: 'Lightweight flexible monocrystalline panel, ideal for curved surfaces and mobile setups.',
-    },
-    {
-        id: 'd8', name: 'Smart Automation Control Hub', price: 75000, category: 'Automation Kits',
-        brand: 'Allenjoe', inventory_status: 'in_stock', items_left: 15, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.9, reviewCount: 18,
-        img: '/images/hero_solar.png',
-        description: 'Central logic hub integrating solar, battery, and CCTV systems with remote mobile control.',
-        tag: 'new',
-    },
-    {
-        id: 'd9', name: '100A MPPT Solar Charge Controller', price: 120000, category: 'Accessories',
-        brand: 'Victron', inventory_status: 'in_stock', items_left: 25, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.8, reviewCount: 45,
-        img: '/images/battery_pack_shop_1785368571149.png',
-        description: 'High-efficiency MPPT charge controller with Bluetooth monitoring.',
-    },
-    {
-        id: 'd10', name: 'Dome CCTV Camera 1080p', price: 45000, category: 'CCTV',
-        brand: 'Dahua', inventory_status: 'in_stock', items_left: 12, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.2, reviewCount: 15,
-        img: '/images/control_room_1785368251776.png',
-        description: 'Indoor dome camera with night vision and motion detection.',
-    },
-    {
-        id: 'd11', name: 'Solar Panel Mounting Kit', price: 35000, category: 'Accessories',
-        brand: 'Generic', inventory_status: 'in_stock', items_left: 40, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.5, reviewCount: 88,
-        img: '/images/solar_panel_shop_1785368560963.png',
-        description: 'Universal aluminum mounting brackets for pitched roofs.',
-    },
-    {
-        id: 'd12', name: '5kVA Pure Sine Wave Inverter', price: 350000, category: 'Inverters',
-        brand: 'Luminous', inventory_status: 'in_stock', items_left: 9, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.6, reviewCount: 76,
-        img: '/images/hybrid_inverter_1785368241772.png',
-        description: 'Reliable 5kVA inverter for home appliances and office equipment.',
-    },
-    {
-        id: 'd13', name: '12V 200Ah Gel Battery', price: 210000, category: 'Batteries',
-        brand: 'Tubular', inventory_status: 'in_stock', items_left: 20, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.4, reviewCount: 34,
-        img: '/images/battery.png',
-        description: 'Deep cycle gel battery designed for solar applications.',
-    },
-    {
-        id: 'd14', name: 'Bi-facial Solar Panel 600W', price: 220000, category: 'Solar Panels',
-        brand: 'Trina Solar', inventory_status: 'in_stock', items_left: 35, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.9, reviewCount: 112,
-        img: '/images/prod_solar_panel_1785371325929.png',
-        description: 'High-yield bi-facial panel capturing sunlight from both sides.',
-        tag: 'hot',
-    },
-    {
-        id: 'd15', name: 'Bullet AI Camera with Spotlight', price: 110000, category: 'CCTV',
-        brand: 'Hikvision', inventory_status: 'in_stock', items_left: 18, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.7, reviewCount: 52,
-        img: '/images/prod_cctv_1785371335915.png',
-        description: 'Outdoor bullet camera featuring AI detection and active spotlight deterrence.',
-    },
-    {
-        id: 'd16', name: 'Smart Home Energy Monitor', price: 55000, category: 'Accessories',
-        brand: 'Allenjoe', inventory_status: 'in_stock', items_left: 50, unlimited_stock: false,
-        is_hidden: false, averageRating: 4.8, reviewCount: 95,
-        img: '/images/integration_hub_1785370635759.png',
-        description: 'Real-time energy consumption monitor with mobile app integration.',
-        tag: 'new',
-    }
-];
+
 
 const CustomCheckbox = ({ checked }) => (
     <div style={{

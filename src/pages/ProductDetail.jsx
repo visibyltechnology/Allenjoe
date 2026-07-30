@@ -9,6 +9,7 @@ import useAuthStore from '../store/useAuthStore';
 import toast from 'react-hot-toast';
 import { collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { INTEREST_RATES_PERCENT } from '../utils/interestRates';
+import { DEMO_PRODUCTS } from '../utils/demoProducts';
 
 function fmt(n) {
   return '₦' + Math.ceil(n).toLocaleString('en-NG');
@@ -45,11 +46,25 @@ export default function ProductDetail() {
           setProduct({ id: docSnap.id, ...data });
           setSelectedImg(data.img || data.images?.[0] || '');
         } else {
-          setError("Product not found");
+          // Fallback to DEMO_PRODUCTS
+          const demoProd = DEMO_PRODUCTS.find(p => p.id === id);
+          if (demoProd) {
+            setProduct(demoProd);
+            setSelectedImg(demoProd.img || demoProd.images?.[0] || '');
+          } else {
+            setError("Product not found");
+          }
         }
       } catch (err) {
         console.error(err);
-        setError("Failed to load product");
+        // Fallback to DEMO_PRODUCTS if Firebase is offline/stubbed
+        const demoProd = DEMO_PRODUCTS.find(p => p.id === id);
+        if (demoProd) {
+          setProduct(demoProd);
+          setSelectedImg(demoProd.img || demoProd.images?.[0] || '');
+        } else {
+          setError("Failed to load product");
+        }
       } finally {
         setLoading(false);
       }

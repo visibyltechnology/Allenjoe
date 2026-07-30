@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
 import { nigeriaData } from '../data/locations';
 import { getDeliveryDetails } from '../utils/deliveryPricing';
+import { DEMO_PRODUCTS } from '../utils/demoProducts';
 
 import { initializeOrderTracking } from '../utils/orderTrackingService';
 import { decreaseInventory } from '../utils/inventoryService';
@@ -269,14 +270,26 @@ export default function Cart() {
     try {
       // Validate & refresh prices
       for (const item of items) {
-        const productDoc = await getDoc(doc(db, 'products', item.id));
-        if (!productDoc.exists()) throw new Error(`Product ${item.name} no longer exists.`);
-        const dbProduct = productDoc.data();
-        item.price = dbProduct.price;
+        try {
+          const productDoc = await getDoc(doc(db, 'products', item.id));
+          if (!productDoc.exists()) {
+             const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
+             if (!demoProd) throw new Error(`Product ${item.name} no longer exists.`);
+             item.price = demoProd.price;
+          } else {
+             const dbProduct = productDoc.data();
+             item.price = dbProduct.price;
+          }
+        } catch (e) {
+          const demoProd = DEMO_PRODUCTS.find(p => p.id === item.id);
+          if (!demoProd) throw new Error(`Product ${item.name} no longer exists.`);
+          item.price = demoProd.price;
+        }
+
         if (item.paymentChoice === 'installment') {
           const baseRate = INTEREST_RATES_DECIMAL[item.installments] ?? 0.2;
           const rate = baseRate * (item.paymentFrequency === 'weekly' ? 0.5 : 1);
-          item.periodPayment = (dbProduct.price * (1 + rate)) / item.installments;
+          item.periodPayment = (item.price * (1 + rate)) / item.installments;
         }
       }
 
