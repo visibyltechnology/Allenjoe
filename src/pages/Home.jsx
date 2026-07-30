@@ -88,10 +88,11 @@ export default function Home() {
 
     // Auto-rotate Hero Carousel
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-        }, 6000);
-        return () => clearInterval(timer);
+        // Auto-rotation stopped as requested
+        // const timer = setInterval(() => {
+        //     setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+        // }, 6000);
+        // return () => clearInterval(timer);
     }, []);
 
     // Data Fetching (fallback for now since categories changed)
