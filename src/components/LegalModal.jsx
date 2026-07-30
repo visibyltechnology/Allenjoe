@@ -251,11 +251,10 @@ export default function LegalModal({ type, onClose, onAccept }) {
             <button
               onClick={() => { onAccept(type); onClose(); }}
               disabled={!hasScrolledToBottom}
-              className={`flex-1 sm:flex-none px-6 py-2.5 font-black text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2 ${
-                hasScrolledToBottom
+              className={`flex-1 sm:flex-none px-6 py-2.5 font-black text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2 ${hasScrolledToBottom
                   ? 'bg-green-600 hover:bg-green-700 text-white shadow-md cursor-pointer'
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
+                }`}
             >
               <i className={`fas ${hasScrolledToBottom ? 'fa-check-circle' : 'fa-lock'} text-xs`}></i>
               {hasScrolledToBottom ? `I Accept — ${title}` : 'Scroll to Accept'}

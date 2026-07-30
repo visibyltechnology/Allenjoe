@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { getStockDisplayText, isProductInStock } from '../utils/inventoryService';
 
-export function ProductCard({ product, compact = false, badge = null, tagLabel = null, onClick }) {
+export function ProductCard({ product, compact = false, badge = null, tagLabel = null, onClick, onAddToCart }) {
     const rating = Number(product.averageRating || product.rating) || 0;
     const inStock = isProductInStock(product);
 
     return (
-        <article className="p-card" onClick={onClick}>
+        <article className="p-card" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
             {/* Badges */}
             {product.tag?.toLowerCase() === 'hot' || tagLabel === 'Hot' ? (
                 <span className="p-badge hot">🔥 Hot</span>
@@ -21,7 +21,6 @@ export function ProductCard({ product, compact = false, badge = null, tagLabel =
                 aria-label="Add to wishlist"
                 onClick={e => {
                     e.stopPropagation();
-                    // Toggle wishlist logic could go here
                 }}
             >
                 <i className="fa-regular fa-heart"></i>
@@ -68,8 +67,9 @@ export function ProductCard({ product, compact = false, badge = null, tagLabel =
                         aria-label="Add to cart"
                         disabled={!inStock}
                         onClick={e => { 
-                            e.stopPropagation(); 
-                            if(inStock && onClick) onClick(); 
+                            e.stopPropagation();
+                            if (inStock && onAddToCart) onAddToCart(product);
+                            else if (inStock && onClick) onClick();
                         }}
                     >
                         <i className={`fa-solid ${inStock ? 'fa-plus' : 'fa-xmark'}`}></i>

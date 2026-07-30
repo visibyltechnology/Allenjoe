@@ -161,7 +161,7 @@ export default function Home() {
         <div className="home-page-wrapper">
             <main>
                 {/* HERO SECTION WITH CAROUSEL */}
-                <section className="hero" style={{ overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: '80px', paddingBottom: '80px' }}>
+                <section className="hero" style={{ overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: '110px', paddingBottom: '80px' }}>
                     {HERO_SLIDES.map((slide, index) => (
                         <div 
                             key={slide.id}

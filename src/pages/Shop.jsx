@@ -7,6 +7,8 @@ import { listenToCategories, DEFAULT_CATEGORIES } from '../utils/categoryService
 import { listenToBrands, DEFAULT_BRANDS } from '../utils/brandService';
 import { ProductCard, SkeletonCard } from '../components/ProductCard';
 import { DEMO_PRODUCTS } from '../utils/demoProducts';
+import useCartStore from '../store/useCartStore';
+import toast from 'react-hot-toast';
 
 // Map URL paths to categories
 function pathToCategory(pathname) {
@@ -46,6 +48,7 @@ export default function Shop() {
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
+    const { addToCart } = useCartStore();
 
     const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
     const [brands, setBrands] = useState(DEFAULT_BRANDS);
@@ -400,6 +403,13 @@ export default function Shop() {
                                     key={p.id}
                                     product={p}
                                     onClick={() => navigate(`/products/${p.id}`)}
+                                    onAddToCart={(prod) => {
+                                        addToCart({ ...prod, quantity: 1 });
+                                        toast.success(`${prod.name.substring(0, 30)}... added to cart!`, {
+                                            icon: '🛒',
+                                            style: { background: '#0a0a0a', color: '#fff', border: '1px solid #f58220' }
+                                        });
+                                    }}
                                 />
                             ))}
                         </div>
