@@ -278,6 +278,54 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      {/* WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/2348000000000"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with us on WhatsApp"
+        style={{
+          position: 'fixed',
+          bottom: '90px',
+          right: '24px',
+          zIndex: 9000,
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: '#25D366',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(37,211,102,0.45)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'scale(1.12)';
+          e.currentTarget.style.boxShadow = '0 6px 28px rgba(37,211,102,0.65)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(37,211,102,0.45)';
+        }}
+      >
+        {/* Pulse ring */}
+        <span style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '50%',
+          border: '2px solid rgba(37,211,102,0.6)',
+          animation: 'wa-pulse 2s ease-out infinite',
+        }} />
+        <style>{`
+          @keyframes wa-pulse {
+            0%   { transform: scale(1);   opacity: 0.8; }
+            70%  { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1.5); opacity: 0; }
+          }
+        `}</style>
+        <i className="fab fa-whatsapp" style={{ fontSize: '1.75rem', color: '#fff', lineHeight: 1 }}></i>
+      </a>
     </Router>
   );
 }
