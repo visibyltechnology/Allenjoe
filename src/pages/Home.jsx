@@ -137,10 +137,10 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="home-page-wrapper">
+        <div className="home-page-wrapper" style={{ overflowX: 'hidden' }}>
             <main>
                 {/* HERO SECTION WITH CAROUSEL */}
-                <section className="hero" style={{ overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: '110px', paddingBottom: '80px' }}>
+                <section className="hero" style={{ position: 'relative', minHeight: '100svh', display: 'flex', alignItems: 'center', paddingTop: '96px', paddingBottom: '80px' }}>
                     {HERO_SLIDES.map((slide, index) => (
                         <div 
                             key={slide.id}
@@ -176,14 +176,17 @@ export default function Home() {
                                     transform: index === currentSlide ? 'translateY(0)' : 'translateY(20px)',
                                     pointerEvents: index === currentSlide ? 'auto' : 'none',
                                     transition: 'opacity 0.8s ease, transform 0.8s ease',
-                                    left: 0, right: 0
+                                    left: 0, right: 0,
+                                    width: '100%',
+                                    padding: '0 1rem',
+                                    boxSizing: 'border-box',
                                 }}
                             >
-                                <div className="hero-badge" style={{ display: 'inline-block', marginBottom: '1.5rem', background: 'rgba(245,130,32,0.1)', border: '1px solid #f58220', color: '#f58220', padding: '6px 16px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                                <div className="hero-badge" style={{ display: 'inline-block', marginBottom: '1rem', background: 'rgba(245,130,32,0.1)', border: '1px solid #f58220', color: '#f58220', padding: '5px 12px', borderRadius: '50px', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', maxWidth: '100%', wordBreak: 'break-word', lineHeight: 1.4 }}>
                                     <span style={{ display: 'inline-block', width: '8px', height: '8px', background: '#f58220', borderRadius: '50%', marginRight: '8px', animation: 'pulse 2s infinite' }}></span>
                                     {slide.badge}
                                 </div>
-                                <h1 className="hero-glow-text" style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(1.5rem, 8vw, 4.5rem)', lineHeight: 1.1, marginBottom: '1.5rem', fontWeight: 900, whiteSpace: 'pre-line' }}>
+                                <h1 className="hero-glow-text" style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(1.6rem, 7vw, 4.5rem)', lineHeight: 1.1, marginBottom: '1.25rem', fontWeight: 900, whiteSpace: 'pre-line', wordBreak: 'break-word' }}>
                                     {slide.title1}<span className="gradient-text">{slide.titleGradient1}</span>{slide.title2}<span className="gradient-text">{slide.titleGradient2}</span>{slide.title3}
                                 </h1>
                                 <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#a0a0b0', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.6, padding: '0 1rem' }}>{slide.desc}</p>
