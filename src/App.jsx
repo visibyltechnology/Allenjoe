@@ -286,7 +286,7 @@ function App() {
         aria-label="Chat with us on WhatsApp"
         style={{
           position: 'fixed',
-          bottom: '90px',
+          bottom: '24px',
           right: '24px',
           zIndex: 9000,
           width: '56px',
