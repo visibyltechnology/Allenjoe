@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "https://pebble-cove-studio.vercel.app/$1"
+    }
+  ]
+}
